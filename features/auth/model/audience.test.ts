@@ -1,7 +1,13 @@
 import { readFileSync } from "node:fs"
 import { describe, expect, it } from "vitest"
 
-import { AUDIENCES, BRAND_AUDIENCE, TRAINER_AUDIENCE } from "./audience"
+import {
+  AUDIENCES,
+  BRAND_AUDIENCE,
+  NEUTRAL_LOGIN,
+  TRAINER_AUDIENCE,
+  loginCopyFor,
+} from "./audience"
 
 describe("AUDIENCES", () => {
   it("resolves both ids", () => {
@@ -24,6 +30,39 @@ describe("AUDIENCES", () => {
     for (const audience of Object.values(AUDIENCES)) {
       expect(audience.profilePath.startsWith(audience.homePrefix)).toBe(true)
     }
+  })
+})
+
+describe("la puerta neutra", () => {
+  it("se queda fuera de AUDIENCES", () => {
+    // `AUDIENCES` es lo que alimenta al formulario de registro, donde la
+    // elección sí importa: una audiencia sin `registerEndpoint` ahí sería una
+    // cuenta creada contra el endpoint equivocado, o contra ninguno.
+    expect(Object.values(AUDIENCES)).not.toContain(NEUTRAL_LOGIN as never)
+    expect(Object.keys(AUDIENCES)).toEqual(["trainer", "brand"])
+  })
+
+  it("no nombra a ninguno de los dos públicos", () => {
+    // Si el título volviera a decir "tu panel" de entrenador, vuelve el bug que
+    // esta pantalla existe para no tener.
+    const text = `${NEUTRAL_LOGIN.title} ${NEUTRAL_LOGIN.description}`
+    expect(text).not.toMatch(/entrenador(?!es)/i)
+    expect(NEUTRAL_LOGIN.brand).not.toBe(TRAINER_AUDIENCE.brand)
+    expect(NEUTRAL_LOGIN.brand).not.toBe(BRAND_AUDIENCE.brand)
+  })
+})
+
+describe("loginCopyFor", () => {
+  it("sin audiencia devuelve la copy neutra", () => {
+    expect(loginCopyFor(null)).toBe(NEUTRAL_LOGIN)
+  })
+
+  it("con audiencia devuelve la de esa audiencia", () => {
+    expect(loginCopyFor(BRAND_AUDIENCE)).toEqual({
+      brand: BRAND_AUDIENCE.brand,
+      title: BRAND_AUDIENCE.loginTitle,
+      description: BRAND_AUDIENCE.loginDescription,
+    })
   })
 })
 
