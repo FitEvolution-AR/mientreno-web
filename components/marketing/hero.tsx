@@ -74,7 +74,13 @@ export function MarketingHero() {
           >
             Ingresar
           </Link>
-          <Link href="/register" className={buttonVariants({ size: "sm" })}>
+          {/* A la sección de públicos y no derecho a `/register`: el registro es
+              lo único que sí depende de quién sos —`/auth/trainer/register` y
+              `/auth/brand/register` crean cuentas con roles distintos— y este
+              botón mandaba a un comercio a registrarse como entrenador sin que
+              se enterara. "Ingresar" no necesita el desvío: el login es el mismo
+              para los dos y el destino sale del JWT. */}
+          <Link href="#accesos" className={buttonVariants({ size: "sm" })}>
             Crear cuenta
           </Link>
         </nav>
@@ -87,29 +93,31 @@ export function MarketingHero() {
         </h1>
         <p className="mt-5 max-w-xl text-body-lg text-white/75 text-pretty">
           Mi Entreno conecta a los alumnos con su entrenador y premia la constancia: cada
-          entrenamiento suma puntos que se convierten en mancuernas, y las mancuernas se
-          canjean por productos reales.
+          entrenamiento suma puntos que se convierten en repes, y las repes se canjean por
+          productos reales.
         </p>
 
+        {/* Los dos CTA son el par que la portada tiene que ofrecer: crear cuenta,
+            que pasa por elegir público, e ingresar, que no. El secundario era un
+            "Ver las dos formas de entrar" que iba a la misma ancla que el
+            primario — dos botones para el mismo destino, y ninguno para quien ya
+            tiene cuenta. */}
         <div className="mt-9 flex flex-wrap items-center gap-3">
           {/* h-11 sobre el size `lg` (h-9): en el panel esos 36 px conviven con
               controles densos, pero acá es el CTA principal y en un teléfono
               queda por debajo del área táctil recomendada. */}
-          <Link
-            href="/register"
-            className={cn(buttonVariants({ size: "lg" }), "h-11 px-5")}
-          >
+          <Link href="#accesos" className={cn(buttonVariants({ size: "lg" }), "h-11 px-5")}>
             Empezar ahora
             <ArrowRight className="size-4" />
           </Link>
           <Link
-            href="#accesos"
+            href="/login"
             className={cn(
               buttonVariants({ variant: "outline", size: "lg" }),
               "h-11 border-white/25 bg-transparent px-5 text-white hover:bg-white/10 hover:text-white",
             )}
           >
-            Ver las dos formas de entrar
+            Ya tengo cuenta
           </Link>
         </div>
       </div>

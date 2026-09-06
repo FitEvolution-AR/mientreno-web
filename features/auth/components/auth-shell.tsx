@@ -2,7 +2,7 @@ import type { ReactNode } from "react"
 
 import { Skeleton } from "@/components/ui/skeleton"
 import { cn } from "@/lib/utils"
-import { AuthBrandPanel, SpeedBars, TRAINER_BRAND, type AuthBrandCopy } from "./auth-brand-panel"
+import { AuthBrandPanel, NEUTRAL_BRAND, SpeedBars, type AuthBrandCopy } from "./auth-brand-panel"
 
 interface AuthShellProps {
   /** Omit on screens that own their heading, such as the invitation landing. */
@@ -10,8 +10,13 @@ interface AuthShellProps {
   description?: string
   children: ReactNode
   footer?: ReactNode
-  /** Defaults to the trainer pitch; override for a different audience. */
-  brand?: AuthBrandCopy
+  /**
+    * Defaults to the neutral pitch; override for a screen that belongs to one
+    * audience. El default era el de entrenador, y eso le ponía ese cartel a
+    * pantallas que los dos públicos comparten —recuperar contraseña, verificar
+    * el código— donde un comercio leía que estaba en el lugar equivocado.
+    */
+   brand?: AuthBrandCopy
 }
 
 /**
@@ -29,7 +34,7 @@ export function AuthShell({
   description,
   children,
   footer,
-  brand = TRAINER_BRAND,
+  brand = NEUTRAL_BRAND,
 }: AuthShellProps) {
   return (
     <main className="relative flex min-h-svh flex-col bg-brand-navy lg:grid lg:grid-cols-[1.05fr_1fr] xl:grid-cols-[1.15fr_1fr]">

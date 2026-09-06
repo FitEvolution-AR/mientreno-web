@@ -34,16 +34,45 @@ export interface AuthBrandCopy {
   note?: string
 }
 
-/** The default: someone signing in to, or signing up for, the trainer panel. */
+/**
+ * La puerta sin etiqueta: pantallas que no le pertenecen a ningún público.
+ *
+ * `/login`, la recuperación de contraseña y la verificación por código las usan
+ * los dos por igual. Mostrarles ahí el pitch de entrenador le dice a un comercio
+ * que se equivocó de puerta justo cuando no se equivocó: el login es el mismo
+ * `POST /auth/login` para ambos y el destino sale del JWT, no de la página.
+ *
+ * El titular es el mismo de la portada a propósito — quien llega desde ahí
+ * reconoce el producto en lugar de leer un segundo eslogan distinto.
+ */
+export const NEUTRAL_BRAND: AuthBrandCopy = {
+  headline: (
+    <>
+      Entrená. Controlá.
+      <br />
+      <span className="text-brand-green">Crecé.</span>
+    </>
+  ),
+  copy: "Mi Entreno conecta a los alumnos con su entrenador y premia la constancia: cada entrenamiento suma puntos que se convierten en repes, y las repes se canjean por productos reales.",
+  features: [
+    { icon: Dumbbell, label: "Planes de entrenamiento y nutrición" },
+    { icon: Users, label: "El progreso de cada alumno, al día" },
+    { icon: Gift, label: "Repes que se canjean por productos reales" },
+    { icon: Store, label: "Comercios que ponen los premios" },
+  ],
+  note: "© 2026 JJTECH",
+}
+
+/** Un entrenador que entra a su panel, o que está creándose la cuenta. */
 export const TRAINER_BRAND: AuthBrandCopy = {
   headline: (
     <>
-      Entrena. Controla.
+      Entrená. Controlá.
       <br />
-      <span className="text-brand-green">Crece.</span>
+      <span className="text-brand-green">Crecé.</span>
     </>
   ),
-  copy: "Planifica entrenamientos y dietas, sigue el progreso de cada alumno y cobra tus suscripciones desde un único panel.",
+  copy: "Planificá entrenamientos y dietas, seguí el progreso de cada alumno y cobrá tus suscripciones desde un único panel.",
   features: [
     { icon: Dumbbell, label: "Planes de entrenamiento a medida" },
     { icon: Salad, label: "Dietas y control de macros" },
@@ -62,10 +91,10 @@ export const MERCHANT_BRAND: AuthBrandCopy = {
       <span className="text-brand-green">su motivación.</span>
     </>
   ),
-  copy: "Sumá tus productos al catálogo de premios. Los alumnos los canjean con las mancuernas que ganan entrenando, y vos llegás a gente que ya está en movimiento.",
+  copy: "Sumá tus productos al catálogo de premios. Los alumnos los canjean con las repes que ganan entrenando, y vos llegás a gente que ya está en movimiento.",
   features: [
     { icon: Store, label: "Cargá tus productos y su stock" },
-    { icon: Gift, label: "Los alumnos los canjean con mancuernas" },
+    { icon: Gift, label: "Los alumnos los canjean con repes" },
     { icon: PackageCheck, label: "Gestioná las entregas desde tu panel" },
     { icon: Users, label: "Llegá a una audiencia que ya entrena" },
   ],
