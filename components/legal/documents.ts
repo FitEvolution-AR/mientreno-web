@@ -33,6 +33,21 @@ export interface LegalDocument {
  */
 export const LEGAL_UPDATED_AT = "6 de septiembre de 2026"
 
+/**
+ * La misma fecha en ISO, que es la forma que viaja al backend.
+ *
+ * El registro manda esta versión dentro del bloque `legal` y el backend la
+ * guarda tal cual en cada asiento de consentimiento: lo que hay que poder
+ * probar es qué texto tuvo delante la persona, no cuál creía el servidor que
+ * estaba publicado. Tiene que coincidir con `legal.documents.version` del
+ * backend — si no, el alta funciona igual pero queda un WARN diciendo que el
+ * cliente mostró otra cosa.
+ *
+ * Al editar cualquiera de los tres documentos hay que mover las dos: la de
+ * arriba es la que lee el usuario, ésta es la que queda en la auditoría.
+ */
+export const LEGAL_DOCUMENTS_VERSION = "2026-09-06"
+
 export const LEGAL_DOCUMENTS: LegalDocument[] = [
   {
     slug: "privacidad",

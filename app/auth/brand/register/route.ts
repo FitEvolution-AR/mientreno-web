@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server"
 
+import { readClientOrigin } from "@/server/client-origin"
 import { postJson } from "@/server/upstream"
 
 /**
@@ -16,7 +17,12 @@ import { postJson } from "@/server/upstream"
  */
 export async function POST(req: NextRequest) {
   const body = (await req.json().catch(() => null)) as
-    | { email?: string; password?: string; phone?: string }
+    | {
+        email?: string
+        password?: string
+        phone?: string
+        legal?: Record<string, unknown>
+      }
     | null
 
   if (!body?.email || !body.password) {
@@ -26,11 +32,29 @@ export async function POST(req: NextRequest) {
     )
   }
 
+  /*
+   * Re-check the consent here and not only in the form's zod schema.
+   *
+   * This handler is reachable with a bare fetch, and the upstream property
+   * `legal.consent.enforce` starts off so the already-published mobile builds
+   * can keep registering — meaning a request with no `legal` block would
+   * currently create a web account with no audit row at all. Checking here
+   * closes that for the panel without waiting on the mobile rollout.
+   */
+  if (!body.legal?.termsAccepted || !body.legal?.privacyAccepted || !body.legal?.cookiesAcknowledged) {
+    return NextResponse.json(
+      { message: "Tenés que aceptar los términos y condiciones para crear la cuenta" },
+      { status: 400 },
+    )
+  }
+
   const registration = await postJson("/auth/brand/register", {
     email: body.email.trim(),
     password: body.password,
     // @Pattern tolerates null but not an empty string.
     phone: body.phone?.trim() || null,
+    // The browser's own address and user agent, which only this hop can see.
+    legal: { ...body.legal, ...readClientOrigin(req) },
   })
 
   if (!registration.ok) {

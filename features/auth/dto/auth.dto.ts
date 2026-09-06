@@ -1,16 +1,47 @@
 /** Literal mirrors of the `auth/dto` records. Do not edit without the Java. */
 
 /**
+ * `LegalAcceptanceDTO` — the legal block inside a registration.
+ *
+ * The three booleans are `@AssertTrue` upstream: if the object is present, all
+ * three must be `true` or the whole registration is a 400. `documentsVersion`
+ * is the version the client actually rendered, not whatever the server
+ * considers current — the audit record has to say which text the person read.
+ *
+ * `clientIp` and `userAgent` are filled in by the BFF route handler, never by
+ * the browser: `postJson` forwards no browser headers, so without them the
+ * backend would record our own Next server as the origin of every trainer and
+ * merchant consent. They land in their own columns upstream and nothing
+ * security-related reads them.
+ */
+export interface LegalAcceptanceDTO {
+  termsAccepted: boolean
+  privacyAccepted: boolean
+  cookiesAcknowledged: boolean
+  documentsVersion: string
+  platform: "WEB" | "IOS" | "ANDROID"
+  appVersion?: string | null
+  locale?: string | null
+  clientIp?: string | null
+  userAgent?: string | null
+}
+
+/**
  * `AuthRegisterRequestDTO`.
  *  - `email`: `@NotBlank @Email`
  *  - `password`: `@NotBlank @Size(min = 8)` and
  *    `@Pattern("^(?=.*[A-Z])(?=.*\\d).+$")` — at least one uppercase and one digit
  *  - `phone`: `@Pattern("^\\+?[0-9]{7,15}$")`, no `@NotBlank`, so null is valid
+ *  - `legal`: `@Valid` but not `@NotNull`. The upstream property
+ *    `legal.consent.enforce` decides whether its absence is a 400; it starts
+ *    off so the already-published mobile builds keep working. This client
+ *    always sends it.
  */
 export interface AuthRegisterRequestDTO {
   email: string
   password: string
   phone: string | null
+  legal: LegalAcceptanceDTO
 }
 
 /** `VerifyOtpRequestDTO` — the code is the 6-digit value from the email. */

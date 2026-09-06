@@ -1,4 +1,5 @@
 import { ApiError, networkError, normalizeError, readErrorBody } from "@/core/http/errors"
+import { LEGAL_DOCUMENTS_VERSION } from "@/components/legal/documents"
 
 import type { MessageResponse, RegisterResult } from "../dto/auth.dto"
 
@@ -35,6 +36,15 @@ export interface RegisterInput {
   password: string
   phone: string
   /**
+   * The legal checkbox. Required — there is no registration without it.
+   *
+   * The form's zod schema already refuses to submit when it is false, so this
+   * is not the guard; it is the payload. Until now the checkbox was read only
+   * to block the button and the answer never left the browser, which left the
+   * backend with no record of what anyone accepted.
+   */
+  acceptedLegal: boolean
+  /**
    * BFF route that creates the account.
    *
    * Comes from `AudienceCopy.registerEndpoint`, which is a closed set of two
@@ -56,6 +66,23 @@ export const authRepository = {
       email: input.email.trim(),
       password: input.password,
       phone: input.phone.trim() || null,
+      /*
+       * One checkbox, three flags. The label names all three documents, so the
+       * single tick is an honest answer for each of them — and upstream they
+       * are three separate rows because the documents version independently.
+       *
+       * `clientIp` and `userAgent` are deliberately absent here: this runs in
+       * the browser, so anything it put there would be self-reported. The BFF
+       * route fills them from its own request headers.
+       */
+      legal: {
+        termsAccepted: input.acceptedLegal,
+        privacyAccepted: input.acceptedLegal,
+        cookiesAcknowledged: input.acceptedLegal,
+        documentsVersion: LEGAL_DOCUMENTS_VERSION,
+        platform: "WEB" as const,
+        locale: typeof navigator !== "undefined" ? navigator.language : null,
+      },
     })
   },
 

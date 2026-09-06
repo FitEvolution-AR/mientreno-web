@@ -123,4 +123,13 @@ export const qk = {
     all: ["payments"] as const,
     mercadoPago: ["payments", "mercado-pago"] as const,
   },
+
+  /**
+   * Legal consents. Invalidated after accepting so the gate lets the user
+   * through without a reload.
+   */
+  legal: {
+    all: ["legal"] as const,
+    myConsents: ["legal", "consents", "me"] as const,
+  },
 } as const
