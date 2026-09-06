@@ -5,6 +5,7 @@ import { SkipLink } from "@/components/shared/skip-link"
 import { MAIN_CONTENT_ID } from "@/lib/dom"
 import { BrandHeader } from "@/components/brand/header"
 import { BrandSidebar } from "@/components/brand/sidebar"
+import { LegalConsentGate } from "@/features/legal/components/legal-consent-gate"
 import { readSession } from "@/server/session-store"
 
 export const metadata: Metadata = {
@@ -38,6 +39,8 @@ export default async function BrandLayout({ children }: { children: React.ReactN
         </main>
       </div>
       <BrandBottomNav />
+      {/* Same gate as the trainer shell; see `app/dashboard/layout.tsx`. */}
+      <LegalConsentGate />
     </div>
   )
 }

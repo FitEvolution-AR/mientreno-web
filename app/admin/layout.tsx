@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 
 import { AdminShell } from "@/components/admin/shell"
+import { LegalConsentGate } from "@/features/legal/components/legal-consent-gate"
 import { isBrand, isTrainer } from "@/server/jwt"
 import { readSession } from "@/server/session-store"
 
@@ -26,5 +27,13 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   // there is nowhere else for them to go, so the link is not rendered.
   const canReturnTo = isTrainer(claims) ? "/dashboard" : isBrand(claims) ? "/comercio" : null
 
-  return <AdminShell canReturnTo={canReturnTo}>{children}</AdminShell>
+  // The gate goes here too: /admin has its own layout and does not pass through
+  // the panel shell, so without this a moderator would come in through this
+  // door and skip the acceptance entirely.
+  return (
+    <AdminShell canReturnTo={canReturnTo}>
+      {children}
+      <LegalConsentGate />
+    </AdminShell>
+  )
 }
