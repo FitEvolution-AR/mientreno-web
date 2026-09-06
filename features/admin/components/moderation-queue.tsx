@@ -37,7 +37,7 @@ const FILTERS: { label: string; value: ProductApprovalStatus }[] = [
  * La cola de revisión.
  *
  * Lo que se decide acá no es "¿el producto está bien?" sino "¿el precio está
- * bien?": un premio a una mancuerna vacía la economía en una tarde. Por eso el
+ * bien?": un premio a una repe vacía la economía en una tarde. Por eso el
  * costo y la exposición máxima se muestran arriba de todo y el checklist
  * arranca por ahí.
  *
@@ -205,7 +205,7 @@ export function ModerationQueue() {
         title={`¿Publicar "${approving?.name ?? ""}"?`}
         description={
           approving
-            ? `Queda visible en el catálogo de todos los alumnos y se puede canjear a ${approving.costDumbbells} ${approving.costDumbbells === 1 ? "mancuerna" : "mancuernas"}. Si se agota el stock, salen ${maxExposure(approving)} de circulación.`
+            ? `Queda visible en el catálogo de todos los alumnos y se puede canjear a ${approving.costReps} ${approving.costReps === 1 ? "repe" : "repes"}. Si se agota el stock, salen ${maxExposure(approving)} de circulación.`
             : ""
         }
         confirmLabel="Aprobar y publicar"
@@ -225,7 +225,7 @@ export function ModerationQueue() {
         title={`¿Publicar ${selected.length} ${selected.length === 1 ? "producto" : "productos"}?`}
         description={`Quedan visibles en el catálogo de todos los alumnos. Si se agotan, salen ${items
           .filter((item) => selected.includes(item.id))
-          .reduce((total, item) => total + maxExposure(item), 0)} mancuernas de circulación.`}
+          .reduce((total, item) => total + maxExposure(item), 0)} repes de circulación.`}
         confirmLabel="Aprobar y publicar"
         loading={bulkApprove.isPending}
         onConfirm={() =>
@@ -308,7 +308,7 @@ function ProductReviewCard({
           <div className="flex gap-1.5">
             <dt className="text-muted-foreground">Costo</dt>
             <dd className="font-semibold tabular-nums">
-              {product.costDumbbells} {product.costDumbbells === 1 ? "mancuerna" : "mancuernas"}
+              {product.costReps} {product.costReps === 1 ? "repe" : "repes"}
             </dd>
           </div>
           <div className="flex gap-1.5">
@@ -319,7 +319,7 @@ function ProductReviewCard({
             {/* El número que nadie calcula hasta que el inventario se agotó. */}
             <dt className="text-muted-foreground">Si se agota</dt>
             <dd className="tabular-nums">
-              −{exposure} {exposure === 1 ? "mancuerna" : "mancuernas"} en circulación
+              −{exposure} {exposure === 1 ? "repe" : "repes"} en circulación
             </dd>
           </div>
         </dl>
