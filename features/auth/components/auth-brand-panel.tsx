@@ -12,17 +12,8 @@ import Image from "next/image"
 import Link from "next/link"
 import type { ReactNode } from "react"
 
+import { BrandBackdrop } from "@/components/shared/brand-backdrop"
 import { cn } from "@/lib/utils"
-
-/**
- * A 20×27 WebP of `public/auth-hero.webp`, inlined.
- *
- * The photo *is* the panel: without a placeholder the first paint is a flat
- * navy rectangle that then pops into a gym, which reads as a broken image on a
- * slow connection.
- */
-const HERO_BLUR =
-  "data:image/webp;base64,UklGRrYAAABXRUJQVlA4IKoAAADQBACdASoUABsAPu1qsFAppaUiqAqpMB2JYgCuHA93Tf10zdC6zjYl1ltRXNawAAD+0d0JPD8Si9GtAHllILUd8OYNQXbonnxIoBHHt8cBDDijHeCOvtILOh227e3jIMDYK7p4W1xeFsRF3KbOMUaZ0aFZVSiWJKYvr3ohbnA+ZLpfr/O1cTw5rQ3pKbJyn89KAcYU0Kb9J1n5oqmpZLrDk6MvDGhhYgwAAA=="
 
 export interface AuthBrandCopy {
   /** Small pill next to the logo — says which side of the product you are on. */
@@ -122,54 +113,23 @@ export function SpeedBars({ className }: { className?: string }) {
  *
  * Full-height column next to the form from `lg` up; a compact band above it
  * below that. The band stays short on purpose — on a phone the submit button
- * matters more than the photograph, so the image gets just enough height to set
- * the tone and the form keeps the fold.
+ * matters more than the branding, so the backdrop gets just enough height to
+ * set the tone and the form keeps the fold.
  */
 export function AuthBrandPanel({ headline, copy, features, note }: AuthBrandCopy) {
   return (
     <section
       className={cn(
-        // `isolate` keeps the -z-10 layers above the navy background of this
-        // section but below its content, without touching the page stacking.
-        // The bottom padding clears the sheet that rides over this edge below lg.
+        // `isolate` keeps the backdrop's -z-10 layer above the navy background
+        // of this section but below its content, without touching the page
+        // stacking. The bottom padding clears the sheet that rides over this
+        // edge below lg.
         "relative isolate flex min-h-[clamp(11rem,25svh,15rem)] flex-col justify-between overflow-hidden bg-brand-navy px-5 pt-7 pb-14",
         "sm:min-h-[clamp(15rem,32svh,20rem)] sm:px-8",
         "lg:min-h-svh lg:px-12 lg:py-14",
       )}
     >
-      <Image
-        src="/auth-hero.webp"
-        alt=""
-        fill
-        priority
-        sizes="(min-width: 1024px) 55vw, 100vw"
-        placeholder="blur"
-        blurDataURL={HERO_BLUR}
-        className="-z-10 object-cover object-[center_22%] lg:object-[center_38%]"
-      />
-
-      {/* Navy wash first, then a directional gradient: together they turn a
-          grey-and-skin photograph into something that belongs to the palette
-          instead of a picture parked behind a form. */}
-      <div aria-hidden className="absolute inset-0 -z-10 bg-brand-navy/72" />
-      <div
-        aria-hidden
-        className="absolute inset-0 -z-10 bg-linear-to-t from-brand-navy via-brand-navy/80 to-brand-navy/25 lg:bg-linear-to-br lg:from-brand-navy/95 lg:via-brand-navy/65 lg:to-brand-navy/35"
-      />
-      <div
-        aria-hidden
-        className="absolute -top-24 -left-32 -z-10 size-104 rounded-full bg-brand-green/25 blur-[130px]"
-      />
-      <div
-        aria-hidden
-        className="absolute -right-24 -bottom-32 -z-10 size-88 rounded-full bg-brand-blue/20 blur-[120px]"
-      />
-      {/* Below lg the form sheet slides over this edge; the fade stops the seam
-          from reading as a hard cut. */}
-      <div
-        aria-hidden
-        className="absolute inset-x-0 bottom-0 -z-10 h-24 bg-linear-to-t from-brand-navy to-transparent lg:hidden"
-      />
+      <BrandBackdrop />
 
       <div className="flex flex-wrap items-center justify-between gap-3">
         <Link

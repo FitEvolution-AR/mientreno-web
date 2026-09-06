@@ -3,18 +3,9 @@ import Image from "next/image"
 import Link from "next/link"
 
 import { SpeedBars } from "@/features/auth/components/auth-brand-panel"
+import { BrandBackdrop } from "@/components/shared/brand-backdrop"
 import { buttonVariants } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
-
-/**
- * Un WebP de 20×27 de `public/auth-hero.webp`, inline.
- *
- * Mismo recurso y mismo placeholder que el panel de las pantallas de acceso:
- * sin él, el primer pintado es un rectángulo navy que después salta a un
- * gimnasio, que en una conexión lenta se lee como una imagen rota.
- */
-const HERO_BLUR =
-  "data:image/webp;base64,UklGRrYAAABXRUJQVlA4IKoAAADQBACdASoUABsAPu1qsFAppaUiqAqpMB2JYgCuHA93Tf10zdC6zjYl1ltRXNawAAD+0d0JPD8Si9GtAHllILUd8OYNQXbonnxIoBHHt8cBDDijHeCOvtILOh227e3jIMDYK7p4W1xeFsRF3KbOMUaZ0aFZVSiWJKYvr3ohbnA+ZLpfr/O1cTw5rQ3pKbJyn89KAcYU0Kb9J1n5oqmpZLrDk6MvDGhhYgwAAA=="
 
 /**
  * La portada.
@@ -27,29 +18,7 @@ const HERO_BLUR =
 export function MarketingHero() {
   return (
     <section className="relative isolate flex min-h-[88svh] flex-col overflow-hidden bg-brand-navy px-5 py-8 sm:px-8 lg:px-12 lg:py-14">
-      <Image
-        src="/auth-hero.webp"
-        alt=""
-        fill
-        priority
-        sizes="100vw"
-        placeholder="blur"
-        blurDataURL={HERO_BLUR}
-        className="-z-10 object-cover object-[center_32%]"
-      />
-      <div aria-hidden className="absolute inset-0 -z-10 bg-brand-navy/78" />
-      <div
-        aria-hidden
-        className="absolute inset-0 -z-10 bg-linear-to-t from-brand-navy via-brand-navy/85 to-brand-navy/35 lg:bg-linear-to-br lg:from-brand-navy/95 lg:via-brand-navy/70 lg:to-brand-navy/40"
-      />
-      <div
-        aria-hidden
-        className="absolute -top-24 -left-32 -z-10 size-104 rounded-full bg-brand-green/25 blur-[130px]"
-      />
-      <div
-        aria-hidden
-        className="absolute -right-24 -bottom-32 -z-10 size-88 rounded-full bg-brand-blue/20 blur-[120px]"
-      />
+      <BrandBackdrop />
 
       <header className="flex flex-wrap items-center justify-between gap-4">
         <Image
