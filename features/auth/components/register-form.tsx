@@ -56,6 +56,7 @@ export function RegisterForm({ audience: audienceId = "trainer" }: { audience?: 
         email: values.email,
         password: values.password,
         phone: values.phone,
+        acceptedLegal: values.acceptedLegal,
         endpoint: audience.registerEndpoint,
       },
       {
@@ -176,8 +177,11 @@ export function RegisterForm({ audience: audienceId = "trainer" }: { audience?: 
         />
 
         {/*
-          La aceptación no se manda al backend —el DTO no la recibe—, así que
-          sólo se lee para bloquear el submit. Ver `legalConsentSchema`.
+          The tick now reaches the backend, which writes one audit row per
+          document with a server-side timestamp. `legalConsentSchema` still
+          blocks the submit, but that is no longer the only thing standing
+          between an unchecked box and an account: `LegalAcceptanceDTO` carries
+          an `@AssertTrue` for each of the three flags.
         */}
         <Controller
           control={control}

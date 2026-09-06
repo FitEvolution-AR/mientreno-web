@@ -5,6 +5,7 @@ import { SkipLink } from "@/components/shared/skip-link"
 import { MAIN_CONTENT_ID } from "@/lib/dom"
 import { DashboardHeader } from "@/components/dashboard/header"
 import { Sidebar } from "@/components/dashboard/sidebar"
+import { LegalConsentGate } from "@/features/legal/components/legal-consent-gate"
 import { isAdmin } from "@/server/jwt"
 import { readSession } from "@/server/session-store"
 
@@ -47,6 +48,12 @@ export default async function DashboardLayout({ children }: { children: React.Re
         </main>
       </div>
       <BottomNav />
+      {/*
+        Renders nothing for anyone whose consent is on the current version,
+        which is everyone who registered after the signup form started asking.
+        When it does render it covers the shell entirely — see the component.
+      */}
+      <LegalConsentGate />
     </div>
   )
 }
