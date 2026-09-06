@@ -81,10 +81,20 @@ describe("registerSchema", () => {
     password: "Secret123",
     confirmPassword: "Secret123",
     phone: "",
+    acceptedLegal: true,
   }
 
   it("accepts a complete form without a phone", () => {
     expect(registerSchema.safeParse(valid).success).toBe(true)
+  })
+
+  it("rejects a form where the legal documents were not accepted", () => {
+    const result = registerSchema.safeParse({ ...valid, acceptedLegal: false })
+
+    expect(result.success).toBe(false)
+    if (!result.success) {
+      expect(result.error.issues[0].path).toEqual(["acceptedLegal"])
+    }
   })
 
   it("rejects mismatched passwords and points at the confirm field", () => {

@@ -14,6 +14,7 @@ import { AuthField } from "./auth-field"
 import { AUDIENCES, TRAINER_AUDIENCE, type AudienceId } from "../model/audience"
 import { AuthShell } from "./auth-shell"
 import { AuthSubmitButton } from "./auth-submit-button"
+import { LegalConsentField } from "./legal-consent-field"
 import { PasswordField } from "./password-field"
 
 /**
@@ -40,7 +41,13 @@ export function RegisterForm({ audience: audienceId = "trainer" }: { audience?: 
     formState: { errors },
   } = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
-    defaultValues: { email: "", password: "", confirmPassword: "", phone: "" },
+    defaultValues: {
+      email: "",
+      password: "",
+      confirmPassword: "",
+      phone: "",
+      acceptedLegal: false,
+    },
   })
 
   function onSubmit(values: RegisterFormValues) {
@@ -164,6 +171,23 @@ export function RegisterForm({ audience: audienceId = "trainer" }: { audience?: 
               onChange={onChange}
               error={errors.confirmPassword?.message}
               disabled={register.isPending}
+            />
+          )}
+        />
+
+        {/*
+          La aceptación no se manda al backend —el DTO no la recibe—, así que
+          sólo se lee para bloquear el submit. Ver `legalConsentSchema`.
+        */}
+        <Controller
+          control={control}
+          name="acceptedLegal"
+          render={({ field: { value, onChange } }) => (
+            <LegalConsentField
+              checked={value}
+              onCheckedChange={onChange}
+              disabled={register.isPending}
+              error={errors.acceptedLegal?.message}
             />
           )}
         />
