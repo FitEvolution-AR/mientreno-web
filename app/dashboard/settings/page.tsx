@@ -18,7 +18,7 @@ import { PreferencesCard } from "@/features/user/components/preferences-card"
 export default function SettingsPage() {
   return (
     <div className="flex flex-col gap-8">
-      <p className="text-body text-muted-foreground">
+      <p className="max-w-prose text-body text-muted-foreground text-pretty">
         Tu cuenta, tus preferencias, tus cobros y la información legal.
       </p>
 
@@ -101,7 +101,7 @@ function SettingsLink({
   return (
     <Link
       href={href}
-      className="flex items-center gap-3 rounded-xl border border-border bg-card p-4 transition-colors hover:border-input focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
+      className="flex items-center gap-3 rounded-xl border border-border bg-card p-4 transition-colors hover:border-border-dark focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
     >
       <Icon className="size-5 shrink-0 text-muted-foreground" />
       <div className="min-w-0 flex-1">

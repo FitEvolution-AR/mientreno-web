@@ -72,7 +72,7 @@ export function ForgotPasswordForm() {
         toast.success("Si la cuenta existe, recibirás un código en tu correo")
         setStep("verify")
       },
-      onError: (error) => fail(error, "No se ha podido solicitar el código"),
+      onError: (error) => fail(error, "No pudimos enviarte el código"),
     })
   }
 
@@ -105,7 +105,7 @@ export function ForgotPasswordForm() {
       { email, code, newPassword: password },
       {
         onSuccess: () => {
-          toast.success("Contraseña actualizada. Ya puedes iniciar sesión.")
+          toast.success("Contraseña actualizada. Ya podés iniciar sesión.")
           router.push(`/login?email=${encodeURIComponent(email.trim())}`)
         },
         onError: (error) => {
@@ -114,7 +114,7 @@ export function ForgotPasswordForm() {
             setStep("verify")
             setCode("")
           }
-          fail(error, "No se ha podido actualizar la contraseña")
+          fail(error, "No pudimos actualizar la contraseña")
         },
       },
     )
@@ -125,7 +125,7 @@ export function ForgotPasswordForm() {
 
   return (
     <AuthShell
-      title="Recupera tu contraseña"
+      title="Recuperá tu contraseña"
       description="Te enviaremos un código para que puedas elegir una nueva."
       footer={
         <Link
@@ -202,7 +202,7 @@ export function ForgotPasswordForm() {
           <AuthFieldFrame
             id="fp-code"
             label="Código recibido"
-            hint={`Lo hemos enviado a ${email}.`}
+            hint={`Lo enviamos a ${email}.`}
           >
             <OtpInput
               id="fp-code"
@@ -229,7 +229,7 @@ export function ForgotPasswordForm() {
             />
             <PasswordField
               id="fp-confirm"
-              label="Repite la contraseña"
+              label="Repetí la contraseña"
               value={confirmPassword}
               onChange={setConfirmPassword}
               error={errors.confirmPassword}

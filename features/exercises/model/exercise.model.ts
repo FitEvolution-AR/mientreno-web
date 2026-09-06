@@ -74,7 +74,7 @@ export function rejectionMessage(rejection: VideoRejection): string {
     case "empty":
       return "El archivo está vacío."
     case "size":
-      return `El vídeo pesa ${formatBytes(rejection.bytes)} y el máximo son 100 MB.`
+      return `El video pesa ${formatBytes(rejection.bytes)} y el máximo son 100 MB.`
     case "type":
       return `Formato no admitido (${rejection.actual}). Se aceptan ${VIDEO_EXTENSIONS.join(", ")}.`
   }

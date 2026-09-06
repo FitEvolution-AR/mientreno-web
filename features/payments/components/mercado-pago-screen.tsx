@@ -50,7 +50,7 @@ export function MercadoPagoScreen() {
   return (
     <div className="flex flex-col gap-8">
       <p className="text-body text-muted-foreground text-pretty">
-        Mercado Pago es el proveedor de pagos de Mi Entreno. Vincula tu cuenta para que los
+        Mercado Pago es el proveedor de pagos de Mi Entreno. Vinculá tu cuenta para que los
         alumnos que acepten uno de tus planes puedan pagarlo y el dinero se acredite directamente
         en tu cuenta.
       </p>
@@ -209,7 +209,7 @@ function ConnectionCard({
           <ShieldCheck className="mt-0.5 size-4 shrink-0" />
           <span className="text-pretty">
             Te llevaremos a Mercado Pago para que autorices a Mi Entreno. Nunca vemos ni
-            guardamos tu contraseña: solo un permiso que puedes retirar cuando quieras.
+            guardamos tu contraseña: solo un permiso que podés retirar cuando quieras.
           </span>
         </p>
       )}

@@ -70,7 +70,7 @@ export function LoginForm({ audience: audienceId = "trainer" }: { audience?: Aud
       toast.error("Esta cuenta es de alumno. Usá la aplicación móvil para entrenar.")
     }
     if (justVerified) {
-      toast.success("Cuenta verificada. Ya puedes iniciar sesión.")
+      toast.success("Cuenta verificada. Ya podés iniciar sesión.")
     }
   }, [guardError, justVerified])
 
@@ -186,7 +186,7 @@ export function LoginForm({ audience: audienceId = "trainer" }: { audience?: Aud
                   href="/forgot-password"
                   className="text-caption font-medium text-muted-foreground underline underline-offset-4 hover:text-primary-text"
                 >
-                  ¿Has olvidado tu contraseña?
+                  ¿Olvidaste tu contraseña?
                 </Link>
               }
             />

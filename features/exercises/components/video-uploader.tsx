@@ -65,7 +65,7 @@ export function VideoUploader({ exerciseId }: { exerciseId: number }) {
         ) : (
           <Upload className="size-4" />
         )}
-        {upload.isPending ? `Subiendo… ${upload.progress}%` : "Subir vídeo"}
+        {upload.isPending ? `Subiendo… ${upload.progress}%` : "Subir video"}
       </Button>
 
       {upload.isPending && (
@@ -87,7 +87,7 @@ export function VideoUploader({ exerciseId }: { exerciseId: number }) {
       {rejection && <p className="text-body text-error-text">{rejection}</p>}
 
       <p className="text-caption text-muted-foreground text-pretty">
-        Formatos admitidos: {VIDEO_EXTENSIONS.join(", ")}. Máximo 100 MB. El último vídeo subido
+        Formatos admitidos: {VIDEO_EXTENSIONS.join(", ")}. Máximo 100 MB. El último video subido
         pasa a ser el que ve el alumno en el ejercicio.
       </p>
     </div>

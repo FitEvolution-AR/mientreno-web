@@ -22,7 +22,7 @@ const STATUSES: Record<MercadoPagoConnectionStatus, StatusDescriptor> = {
   NOT_CONNECTED: {
     label: "Sin vincular",
     description:
-      "Vincula tu cuenta de Mercado Pago para que tus alumnos puedan pagar sus suscripciones.",
+      "Vinculá tu cuenta de Mercado Pago para que tus alumnos puedan pagar sus suscripciones.",
     tone: "neutral",
   },
   CONNECTED: {
@@ -33,13 +33,13 @@ const STATUSES: Record<MercadoPagoConnectionStatus, StatusDescriptor> = {
   EXPIRED: {
     label: "Vinculación caducada",
     description:
-      "El permiso ha caducado y no se pueden crear cobros nuevos. Vuelve a vincular la cuenta para reanudarlos.",
+      "El permiso venció y no se pueden crear cobros nuevos. Volvé a vincular la cuenta para reanudarlos.",
     tone: "warning",
   },
   REVOKED: {
     label: "Permiso revocado",
     description:
-      "Has retirado el permiso desde Mercado Pago. Los cobros están detenidos hasta que vuelvas a vincularla.",
+      "Retiraste el permiso desde Mercado Pago. Los cobros están detenidos hasta que vuelvas a vincularla.",
     tone: "danger",
   },
 }
@@ -48,7 +48,7 @@ export function describeConnection(status: MercadoPagoConnectionStatus): StatusD
   return (
     STATUSES[status] ?? {
       label: "Estado desconocido",
-      description: "No hemos podido interpretar el estado de la vinculación.",
+      description: "No pudimos interpretar el estado de la vinculación.",
       tone: "neutral",
     }
   )

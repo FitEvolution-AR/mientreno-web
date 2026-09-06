@@ -50,7 +50,7 @@ export function PlanPicker({ selectedId, onSelect }: PlanPickerProps) {
       <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed border-border px-6 py-10 text-center">
         <CreditCard className="size-6 text-muted-foreground" />
         <p className="text-body text-muted-foreground text-pretty">
-          No tienes ningún plan de suscripción, así que no hay nada que ofrecer todavía.
+          No tenés ningún plan de suscripción, así que no hay nada que ofrecer todavía.
         </p>
         <Link
           href="/dashboard/plans"
@@ -78,10 +78,10 @@ export function PlanPicker({ selectedId, onSelect }: PlanPickerProps) {
               onClick={() => onSelect(plan)}
               className={cn(
                 "flex w-full items-start gap-3 rounded-xl border p-4 text-left transition-colors",
-                "focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none",
+                "focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
                 selected
                   ? "border-primary bg-primary/10"
-                  : "border-border bg-card hover:border-input",
+                  : "border-border bg-card hover:border-border-dark",
               )}
             >
               <div className="min-w-0 flex-1">

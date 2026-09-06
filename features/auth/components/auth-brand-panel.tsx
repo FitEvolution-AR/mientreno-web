@@ -146,7 +146,7 @@ export function AuthBrandPanel({ headline, copy, features, note }: AuthBrandCopy
         <Link
           href="/"
           aria-label="Mi Entreno"
-          className="inline-flex rounded-md outline-none focus-visible:ring-3 focus-visible:ring-brand-green/60"
+          className="inline-flex rounded-md outline-none focus-visible:ring-2 focus-visible:ring-primary"
         >
           <Image
             src="/logo-light.png"

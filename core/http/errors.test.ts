@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import { ApiError, normalizeError, readErrorBody } from "./errors"
+import { ApiError, normalizeError, readErrorBody, unclaimedFieldErrors } from "./errors"
 
 /**
  * Fixtures copied from the two shapes `GlobalExceptionHandler` actually emits.
@@ -126,5 +126,32 @@ describe("ApiError", () => {
   it("reports no status for a network failure", () => {
     const error = new ApiError({ kind: "network", message: "sin conexión" })
     expect(error.status).toBeNull()
+  })
+})
+
+describe("unclaimedFieldErrors", () => {
+  it("returns the messages no field on the form renders", () => {
+    // The path-keyed shape `MethodArgumentNotValidException` produces for a
+    // nested list — the case that used to leave the plan editors silent.
+    const fields = {
+      title: "El título es obligatorio",
+      "days[0].exercises[1].name": "El nombre es obligatorio",
+      "days[2].label": "Demasiado largo",
+    }
+
+    expect(unclaimedFieldErrors(fields, ["title", "days", "exercises"])).toEqual([
+      "El nombre es obligatorio",
+      "Demasiado largo",
+    ])
+  })
+
+  it("is empty when the form claims every key", () => {
+    expect(unclaimedFieldErrors({ title: "Obligatorio" }, ["title"])).toEqual([])
+  })
+
+  it("is empty for a failure that carries no field errors", () => {
+    expect(unclaimedFieldErrors(new ApiError(normalizeError(409, undefined)).fieldErrors, [])).toEqual(
+      [],
+    )
   })
 })

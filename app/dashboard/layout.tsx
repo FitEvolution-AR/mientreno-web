@@ -1,6 +1,8 @@
 import type { Metadata } from "next"
 
 import { BottomNav } from "@/components/dashboard/bottom-nav"
+import { SkipLink } from "@/components/shared/skip-link"
+import { MAIN_CONTENT_ID } from "@/lib/dom"
 import { DashboardHeader } from "@/components/dashboard/header"
 import { Sidebar } from "@/components/dashboard/sidebar"
 import { isAdmin } from "@/server/jwt"
@@ -31,11 +33,18 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const admin = isAdmin(session?.claims ?? null)
 
   return (
-    <div className="flex min-h-svh">
+    <div className="relative flex min-h-svh">
+      <SkipLink />
       <Sidebar initialName={initialName} isAdmin={admin} />
       <div className="flex min-w-0 flex-1 flex-col">
         <DashboardHeader initialName={initialName} />
-        <main className="flex-1 px-4 pb-24 pt-6 sm:px-6 md:pb-8 lg:px-8">{children}</main>
+        <main
+          id={MAIN_CONTENT_ID}
+          tabIndex={-1}
+          className="flex-1 px-4 pb-24 pt-6 sm:px-6 md:pb-8 lg:px-8"
+        >
+          {children}
+        </main>
       </div>
       <BottomNav />
     </div>

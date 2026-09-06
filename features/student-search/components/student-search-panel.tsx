@@ -62,7 +62,7 @@ export function StudentSearchPanel({
           />
         </div>
         <p className="text-caption text-muted-foreground">
-          Se buscan alumnos registrados en Mi Entreno. Escribe al menos{" "}
+          Se buscan alumnos registrados en Mi Entreno. Escribí al menos{" "}
           {MIN_SEARCH_LENGTH} caracteres.
         </p>
       </div>
@@ -91,7 +91,7 @@ export function StudentSearchPanel({
       {!search.isIdle && !search.isLoading && !search.isError && search.candidates.length === 0 && (
         <div className="rounded-xl border border-dashed border-border px-6 py-10 text-center">
           <p className="text-body text-muted-foreground text-pretty">
-            Ningún alumno coincide con “{debouncedTerm}”. Comprueba el correo con el que se
+            Ningún alumno coincide con “{debouncedTerm}”. Revisá el correo con el que se
             registró.
           </p>
         </div>
@@ -161,8 +161,8 @@ function CandidateRow({
         onClick={() => onSelect(candidate)}
         className={cn(
           "flex w-full items-center gap-3 rounded-xl border p-3 text-left transition-colors",
-          "focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none",
-          selected ? "border-primary bg-primary/10" : "border-border bg-card hover:border-input",
+          "focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
+          selected ? "border-primary bg-primary/10" : "border-border bg-card hover:border-border-dark",
           blocked !== null && "cursor-not-allowed opacity-60 hover:border-border",
         )}
       >

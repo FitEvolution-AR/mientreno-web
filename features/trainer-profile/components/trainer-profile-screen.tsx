@@ -81,9 +81,9 @@ export function TrainerProfileScreen() {
     return (
       <Alert variant="destructive">
         <AlertCircle className="size-4" />
-        <AlertTitle>No se ha podido cargar tu perfil</AlertTitle>
+        <AlertTitle>No pudimos cargar tu perfil</AlertTitle>
         <AlertDescription>
-          Vuelve a intentarlo en unos instantes. Si el problema continúa, comprueba tu conexión.
+          Volvé a intentarlo en unos instantes. Si el problema sigue, revisá tu conexión.
         </AlertDescription>
       </Alert>
     )
@@ -94,11 +94,11 @@ export function TrainerProfileScreen() {
       {isCreating ? (
         <Alert>
           <AlertCircle className="size-4" />
-          <AlertTitle>Completa tu perfil profesional</AlertTitle>
+          <AlertTitle>Completá tu perfil profesional</AlertTitle>
           <AlertDescription>
             {forcedByGuard
               ? "Necesitas un perfil profesional antes de gestionar alumnos y planes."
-              : "Aún no has creado tu perfil profesional. Solo se crea una vez."}
+              : "Todavía no creaste tu perfil profesional. Solo se crea una vez."}
           </AlertDescription>
         </Alert>
       ) : (

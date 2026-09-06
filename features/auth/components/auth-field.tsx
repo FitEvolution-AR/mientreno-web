@@ -14,7 +14,7 @@ import { cn } from "@/lib/utils"
  * cannot drift away from the plain ones.
  */
 export const AUTH_CONTROL =
-  "h-11 rounded-lg border-input bg-card text-body-lg shadow-[0_1px_2px_rgba(8,19,36,0.04)] placeholder:text-foreground-disabled"
+  "h-11 rounded-lg border-border-dark bg-card text-body-lg shadow-[0_1px_2px_rgba(8,19,36,0.04)] placeholder:text-muted-foreground"
 
 /** Label styling, shared with the fields that build their own control. */
 const AUTH_LABEL = "text-caption font-semibold tracking-wide text-foreground-secondary uppercase"

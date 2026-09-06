@@ -1,6 +1,8 @@
 import type { Metadata } from "next"
 
 import { BrandBottomNav } from "@/components/brand/bottom-nav"
+import { SkipLink } from "@/components/shared/skip-link"
+import { MAIN_CONTENT_ID } from "@/lib/dom"
 import { BrandHeader } from "@/components/brand/header"
 import { BrandSidebar } from "@/components/brand/sidebar"
 import { readSession } from "@/server/session-store"
@@ -22,11 +24,18 @@ export default async function BrandLayout({ children }: { children: React.ReactN
   const initialName = session?.claims.firstName ?? null
 
   return (
-    <div className="flex min-h-svh">
+    <div className="relative flex min-h-svh">
+      <SkipLink />
       <BrandSidebar initialName={initialName} />
       <div className="flex min-w-0 flex-1 flex-col">
         <BrandHeader />
-        <main className="flex-1 px-4 pb-24 pt-6 sm:px-6 md:pb-8 lg:px-8">{children}</main>
+        <main
+          id={MAIN_CONTENT_ID}
+          tabIndex={-1}
+          className="flex-1 px-4 pb-24 pt-6 sm:px-6 md:pb-8 lg:px-8"
+        >
+          {children}
+        </main>
       </div>
       <BrandBottomNav />
     </div>

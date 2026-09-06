@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
     // Pass the backend's own body through: bean-validation 400s are a
     // field -> message map the form needs intact, and 409 means the profile
     // was already completed.
-    return NextResponse.json(data ?? { message: "No se ha podido completar el perfil" }, { status })
+    return NextResponse.json(data ?? { message: "No pudimos completar el perfil" }, { status })
   }
 
   const auth = data as AuthResponseDTO

@@ -61,7 +61,7 @@ export function ProgressTab({ subscriptionId }: { subscriptionId: number }) {
       <EmptyState
         icon={LineChart}
         title="Este alumno aún no ha registrado progreso"
-        description="Cuando anote su peso o sus medidas desde la aplicación, aparecerán aquí."
+        description="Cuando anote su peso o sus medidas desde la aplicación, aparecerán acá."
       />
     )
   }
@@ -78,7 +78,7 @@ export function ProgressTab({ subscriptionId }: { subscriptionId: number }) {
               type="button"
               aria-pressed={active}
               onClick={() => setMeasureKey(option.key)}
-              className="rounded-full focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
+              className="rounded-full focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
             >
               <Badge variant={active ? "default" : "secondary"} className="cursor-pointer">
                 {option.label}
@@ -122,7 +122,7 @@ export function ProgressTab({ subscriptionId }: { subscriptionId: number }) {
       <section className="flex flex-col gap-3">
         <h3 className="font-heading text-subtitle font-semibold tracking-tight">Historial</h3>
         <div className="overflow-x-auto rounded-xl border border-border">
-          <Table>
+          <Table label="Historial de mediciones">
             <TableHeader>
               <TableRow>
                 <TableHead>Fecha</TableHead>
@@ -163,7 +163,7 @@ function ProgressRow({ entry, onOpen }: { entry: ProgressEntry; onOpen: () => vo
           onOpen()
         }
       }}
-      className="cursor-pointer focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
+      className="cursor-pointer focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
     >
       <TableCell className="font-medium whitespace-nowrap">
         {formatDate(entry.recordedAt)}

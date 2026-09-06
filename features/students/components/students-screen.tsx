@@ -1,6 +1,6 @@
 "use client"
 
-import { AlertTriangle, Pause, Play, Search, Send, Users } from "lucide-react"
+import { AlertTriangle, Loader2, Pause, Play, Search, Send, Users } from "lucide-react"
 import Link from "next/link"
 
 import { ConfirmDialog } from "@/components/dashboard/confirm-dialog"
@@ -30,6 +30,18 @@ export function StudentsScreen() {
     onPaused: trackPaused,
     onResumed: untrackPaused,
   })
+
+  /**
+   * Which row the pending mutation belongs to.
+   *
+   * `status.isPending` is a single shared flag, so using it directly disabled
+   * Pausar and Reanudar on *every* row while one of them ran: the trainer
+   * clicked one student and the whole roster went dead with nothing to say
+   * which one was working. `variables` carries the id of the row in flight, so
+   * the freeze — and the spinner — stay on that row.
+   */
+  const isActing = (student: StudentSubscription) =>
+    status.isPending && status.variables?.subscriptionId === student.subscriptionId
 
   // Turns a mute link into one that says whether anything is waiting.
   const pendingInvitations = useInvitationCounts()?.pending ?? 0
@@ -131,11 +143,16 @@ export function StudentsScreen() {
         <p className="flex items-start gap-2 rounded-lg border border-warning bg-warning-surface p-3 text-body text-warning-text">
           <AlertTriangle className="mt-0.5 size-4 shrink-0" />
           {/* getActiveByTrainer filters to ACTIVE, so paused subscriptions are
-              only visible because this browser remembers them. The user does
-              not need to know that — only that this list is the safe place to
-              resume them from. */}
+              only visible because this browser remembers them.
+
+              Ese detalle sí importa contarlo: la consecuencia no es interna —
+              desde otra computadora estas filas no aparecen, y el entrenador
+              no tiene forma de deducirlo mirando la lista. Decir "desde acá"
+              a secas invitaba justo al error de dejarlas para después y
+              abrirlas en otro lado. */}
           <span className="text-pretty">
-            Tenés suscripciones pausadas. Reanudalas desde acá para no perderlas de vista.
+            Tenés suscripciones pausadas. Reanudalas desde acá: sólo se ven en el navegador
+            desde el que las pausaste.
           </span>
         </p>
       )}
@@ -173,7 +190,7 @@ export function StudentsScreen() {
               href={`/dashboard/students/${student.subscriptionId}`}
               onMouseEnter={() => prefetch(student.subscriptionId)}
               onFocus={() => prefetch(student.subscriptionId)}
-              className="flex min-w-0 flex-1 items-center gap-3 rounded-lg focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
+              className="flex min-w-0 flex-1 items-center gap-3 rounded-lg focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
             >
               <UserAvatar
                 name={student.studentName}
@@ -185,7 +202,7 @@ export function StudentsScreen() {
                 <p className="truncate font-medium">{student.studentName}</p>
                 <p className="truncate text-body text-muted-foreground">
                   {student.plan?.name ?? "Sin plan"}
-                  {student.expiresAt && ` · caduca ${formatDate(student.expiresAt)}`}
+                  {student.expiresAt && ` · vence ${formatDate(student.expiresAt)}`}
                 </p>
               </div>
             </Link>
@@ -197,10 +214,14 @@ export function StudentsScreen() {
                 <Button
                   variant="outline"
                   size="sm"
-                  disabled={status.isPending}
+                  disabled={isActing(student)}
                   onClick={() => setPendingPause(student)}
                 >
-                  <Pause className="size-4" />
+                  {isActing(student) ? (
+                    <Loader2 className="size-4 animate-spin" />
+                  ) : (
+                    <Pause className="size-4" />
+                  )}
                   Pausar
                 </Button>
               )}
@@ -209,12 +230,19 @@ export function StudentsScreen() {
                 <Button
                   variant="outline"
                   size="sm"
-                  disabled={status.isPending}
+                  disabled={isActing(student)}
                   onClick={() =>
                     status.mutate({ subscriptionId: student.subscriptionId, action: "resume" })
                   }
                 >
-                  <Play className="size-4" />
+                  {/* Reanudar no pasa por ConfirmDialog — es reversible — así
+                      que este spinner es su único acuse de recibo hasta que
+                      llega el toast. */}
+                  {isActing(student) ? (
+                    <Loader2 className="size-4 animate-spin" />
+                  ) : (
+                    <Play className="size-4" />
+                  )}
                   Reanudar
                 </Button>
               )}

@@ -127,7 +127,7 @@ export function OtpInput({
             onFocus={(event) => event.target.select()}
             className={cn(
               "h-14 w-full min-w-0 rounded-lg border text-center font-heading text-title font-semibold shadow-[0_1px_2px_rgba(8,19,36,0.04)] caret-primary-text transition-colors",
-              "focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none",
+              "focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
               "disabled:cursor-not-allowed disabled:opacity-50",
               // A filled box turns green so the user can see how far along the
               // code is without counting boxes.
@@ -135,7 +135,7 @@ export function OtpInput({
                 ? "border-destructive bg-error-surface/40 text-error-text"
                 : filled
                   ? "border-primary/50 bg-success-surface/40 text-foreground"
-                  : "border-input bg-card text-foreground",
+                  : "border-border-dark bg-card text-foreground",
             )}
           />
         )

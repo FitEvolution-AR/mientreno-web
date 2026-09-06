@@ -30,13 +30,13 @@ export function DeleteAccountCard() {
         <h3 className="font-heading text-body-lg font-semibold tracking-tight">Eliminar cuenta</h3>
         <p className="mt-1 text-body text-muted-foreground text-pretty">
           Se cerrará tu sesión en todos los dispositivos y perderás el acceso a tus alumnos y
-          planes. Esta acción no se puede deshacer desde aquí.
+          planes. Esta acción no se puede deshacer desde acá.
         </p>
       </div>
 
       <div className="flex flex-col gap-2">
         <Label htmlFor="delete-confirm">
-          Escribe <span className="font-mono font-semibold">{CONFIRMATION}</span> para confirmar
+          Escribí <span className="font-mono font-semibold">{CONFIRMATION}</span> para confirmar
         </Label>
         <Input
           id="delete-confirm"

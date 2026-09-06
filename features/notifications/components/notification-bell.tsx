@@ -42,7 +42,7 @@ export function NotificationBell() {
         {unread > 0 && (
           <span
             aria-hidden
-            className="absolute -right-0.5 -top-0.5 flex min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-semibold leading-4 text-primary-foreground"
+            className="absolute -right-1 -top-1 flex min-h-[18px] min-w-[18px] items-center justify-center rounded-full bg-primary px-1 text-caption leading-none font-semibold text-primary-foreground"
           >
             {badgeLabel(unread)}
           </span>
@@ -91,7 +91,7 @@ function NotificationPanel({ onNavigate }: { onNavigate: () => void }) {
 
         {!list.isLoading && latest.length === 0 && (
           <p className="rounded-lg border border-dashed border-border p-4 text-body text-muted-foreground">
-            No tienes notificaciones.
+            No tenés notificaciones.
           </p>
         )}
 
@@ -101,7 +101,9 @@ function NotificationPanel({ onNavigate }: { onNavigate: () => void }) {
               <NotificationItem
                 key={notification.id}
                 notification={notification}
-                isPending={markRead.isPending}
+                // Sólo la fila en vuelo: `isPending` a secas desactivaba el
+                // botón de todas las no leídas a la vez.
+                isPending={markRead.isPending && markRead.variables === notification.id}
                 onMarkRead={(id) => markRead.mutate(id)}
                 onNavigate={onNavigate}
               />

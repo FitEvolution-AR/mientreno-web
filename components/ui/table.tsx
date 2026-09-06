@@ -4,11 +4,34 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
-function Table({ className, ...props }: React.ComponentProps<"table">) {
+/**
+ * El contenedor del scroll es enfocable a propósito.
+ *
+ * Las celdas de estas tablas son texto plano: una fila entera puede no tener
+ * ni un elemento enfocable, así que con `overflow-x-auto` a secas las columnas
+ * que quedan fuera de pantalla sólo se alcanzaban con el mouse. Un `tabIndex`
+ * en la región convierte el scroll en algo operable por teclado, y una región
+ * enfocable necesita nombre — de ahí que `label` sea obligatorio.
+ */
+function Table({
+  className,
+  containerClassName,
+  label,
+  ...props
+}: React.ComponentProps<"table"> & {
+  containerClassName?: string
+  label: string
+}) {
   return (
     <div
       data-slot="table-container"
-      className="relative w-full overflow-x-auto"
+      role="region"
+      aria-label={label}
+      tabIndex={0}
+      className={cn(
+        "relative w-full overflow-x-auto focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
+        containerClassName
+      )}
     >
       <table
         data-slot="table"
@@ -69,6 +92,7 @@ function TableHead({ className, ...props }: React.ComponentProps<"th">) {
   return (
     <th
       data-slot="table-head"
+      scope="col"
       className={cn(
         "h-10 px-2 text-left align-middle font-medium whitespace-nowrap text-foreground [&:has([role=checkbox])]:pr-0",
         className

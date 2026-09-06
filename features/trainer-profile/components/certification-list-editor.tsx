@@ -42,7 +42,7 @@ export function CertificationListEditor({
             <Award className="size-4" />
           </div>
           <p className="text-body text-muted-foreground">
-            Aún no has añadido certificaciones. Aparecerán en tu perfil público.
+            Todavía no agregaste certificaciones. Aparecerán en tu perfil público.
           </p>
         </div>
       ) : (
@@ -141,7 +141,7 @@ export function CertificationListEditor({
         className="self-start"
       >
         <Plus className="size-4" />
-        Añadir certificación
+        Agregar certificación
       </Button>
     </div>
   )

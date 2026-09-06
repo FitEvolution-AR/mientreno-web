@@ -49,7 +49,7 @@ export function PasswordField({
       label={label}
       error={error}
       action={action}
-      footer={showRules && <PasswordRules value={value} />}
+      footer={showRules && <PasswordRules id={`${id}-rules`} value={value} />}
     >
       <div className="relative">
         <Lock
@@ -65,7 +65,11 @@ export function PasswordField({
           autoComplete={autoComplete}
           placeholder="••••••••"
           aria-invalid={error ? true : undefined}
-          aria-describedby={error ? `${id}-error` : undefined}
+          aria-describedby={
+            [error && `${id}-error`, showRules && `${id}-rules`]
+              .filter(Boolean)
+              .join(" ") || undefined
+          }
           className={cn(AUTH_CONTROL, "pr-11 pl-10 tracking-[0.12em]")}
           onChange={(event) => onChange(event.target.value)}
         />
@@ -75,7 +79,7 @@ export function PasswordField({
           onClick={() => setVisible((current) => !current)}
           disabled={disabled}
           aria-label={visible ? "Ocultar contraseña" : "Mostrar contraseña"}
-          className="absolute top-1/2 right-1.5 flex size-8 -translate-y-1/2 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none disabled:opacity-50"
+          className="absolute top-1/2 right-1.5 flex size-8 -translate-y-1/2 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none disabled:opacity-50"
         >
           {visible ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
         </button>
@@ -85,10 +89,18 @@ export function PasswordField({
   )
 }
 
-/** The backend's policy as pills that fill in while the user types. */
-function PasswordRules({ value }: { value: string }) {
+/**
+ * The backend's policy as pills that fill in while the user types.
+ *
+ * `aria-live` because the filling-in was purely visual: someone on a screen
+ * reader got no signal that a rule had been met, which is the failed round trip
+ * this component exists to avoid. And the met/unmet distinction was carried by
+ * colour plus an icon with no text, so both states read identically — hence the
+ * `sr-only` prefix on each item.
+ */
+function PasswordRules({ id, value }: { id: string; value: string }) {
   return (
-    <ul className="mt-0.5 flex flex-wrap gap-1.5">
+    <ul id={id} aria-live="polite" className="mt-0.5 flex flex-wrap gap-1.5">
       {PASSWORD_RULES.map((rule) => {
         const met = rule.test(value)
         return (
@@ -102,10 +114,11 @@ function PasswordRules({ value }: { value: string }) {
             )}
           >
             {met ? (
-              <Check className="size-3 shrink-0" />
+              <Check aria-hidden className="size-3 shrink-0" />
             ) : (
               <span aria-hidden className="size-1.5 shrink-0 rounded-full bg-foreground-disabled" />
             )}
+            <span className="sr-only">{met ? "Cumplido:" : "Pendiente:"}</span>
             {rule.label}
           </li>
         )

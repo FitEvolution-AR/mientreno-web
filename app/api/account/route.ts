@@ -18,7 +18,7 @@ export async function DELETE() {
   const { ok, status, data } = await authedJson("/api/account", "DELETE")
 
   if (!ok) {
-    return NextResponse.json(data ?? { message: "No se ha podido eliminar la cuenta" }, { status })
+    return NextResponse.json(data ?? { message: "No pudimos eliminar la cuenta" }, { status })
   }
 
   await clearSession()

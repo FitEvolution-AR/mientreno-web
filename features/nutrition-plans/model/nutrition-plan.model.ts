@@ -116,6 +116,32 @@ export function emptyMeal(index: number): EditorMeal {
   }
 }
 
+/** Copy of a meal food with a fresh local key. See {@link cloneMeal}. */
+export function cloneMealFood(food: EditorMealFood): EditorMealFood {
+  return {
+    ...food,
+    key: nextKey("food"),
+    macros: food.macros ? { ...food.macros } : null,
+  }
+}
+
+/**
+ * Copies a whole meal, foods and scaled macros included.
+ *
+ * Most days of a plan repeat a meal with one swap — the same breakfast with a
+ * different fruit — and retyping four macro fields to change one of them is
+ * the busywork this avoids. The keys are regenerated because they are React's
+ * identity for these rows.
+ */
+export function cloneMeal(meal: EditorMeal): EditorMeal {
+  return {
+    ...meal,
+    key: nextKey("meal"),
+    name: meal.name.trim() ? `${meal.name} (copia)` : "",
+    foods: meal.foods.map(cloneMealFood),
+  }
+}
+
 export function emptyNutritionPlan(): EditorNutritionPlan {
   return { title: "", notes: "", meals: [emptyMeal(0)] }
 }

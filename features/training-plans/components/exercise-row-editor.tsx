@@ -1,6 +1,6 @@
 "use client"
 
-import { ChevronDown, ChevronUp, GripVertical, Link2Off, Trash2, Video } from "lucide-react"
+import { ChevronDown, ChevronUp, Copy, GripVertical, Link2Off, Trash2, Video } from "lucide-react"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -18,8 +18,11 @@ interface ExerciseRowEditorProps {
   index: number
   total: number
   disabled?: boolean
+  /** Validation message for this row, anchored here instead of at the top. */
+  error?: string
   onChange: (patch: Partial<EditorExercise>) => void
   onRemove: () => void
+  onDuplicate: () => void
   onMove: (direction: -1 | 1) => void
 }
 
@@ -28,14 +31,24 @@ export function ExerciseRowEditor({
   index,
   total,
   disabled,
+  error,
   onChange,
   onRemove,
+  onDuplicate,
   onMove,
 }: ExerciseRowEditorProps) {
   const isCustom = exercise.catalogExerciseId === null
+  const errorId = error ? `${exercise.key}-error` : undefined
 
   return (
-    <li className="flex flex-col gap-4 rounded-xl border border-border bg-background p-4">
+    <li
+      className={cn(
+        "flex flex-col gap-4 rounded-xl border bg-background p-4",
+        // El error vive en la fila, no arriba del formulario: con treinta
+        // ejercicios, "cada ejercicio necesita un nombre" no dice cuál.
+        error ? "border-error/60 ring-1 ring-error/20" : "border-border",
+      )}
+    >
       <div className="flex items-start gap-3">
         <div className="flex flex-col items-center gap-1 pt-0.5">
           <GripVertical className="size-4 text-muted-foreground" aria-hidden />
@@ -47,9 +60,17 @@ export function ExerciseRowEditor({
             value={exercise.name}
             disabled={disabled}
             aria-label={`Nombre del ejercicio ${index + 1}`}
+            aria-invalid={error ? true : undefined}
+            aria-describedby={errorId}
             placeholder="Nombre del ejercicio"
             onChange={(event) => onChange({ name: event.target.value })}
           />
+
+          {error && (
+            <p id={errorId} role="alert" className="mt-1.5 text-body text-error-text">
+              {error}
+            </p>
+          )}
 
           <ul className="mt-2 flex flex-wrap items-center gap-1.5">
             {exercise.muscleGroup && (
@@ -76,7 +97,7 @@ export function ExerciseRowEditor({
               <li>
                 <Badge variant="secondary" className="gap-1">
                   <Video className="size-3" />
-                  Con vídeo
+                  Con video
                 </Badge>
               </li>
             )}
@@ -106,17 +127,30 @@ export function ExerciseRowEditor({
               <ChevronDown className="size-4" />
             </Button>
           </div>
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            disabled={disabled}
-            aria-label="Quitar ejercicio"
-            className="text-error-text focus-visible:text-error-text"
-            onClick={onRemove}
-          >
-            <Trash2 className="size-4" />
-          </Button>
+          <div className="flex">
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              disabled={disabled}
+              aria-label={`Duplicar ejercicio ${index + 1}`}
+              title="Duplicar ejercicio"
+              onClick={onDuplicate}
+            >
+              <Copy className="size-4" />
+            </Button>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              disabled={disabled}
+              aria-label="Quitar ejercicio"
+              className="text-error-text focus-visible:text-error-text"
+              onClick={onRemove}
+            >
+              <Trash2 className="size-4" />
+            </Button>
+          </div>
         </div>
       </div>
 
@@ -167,8 +201,8 @@ export function ExerciseRowEditor({
               })
             }}
             className={cn(
-              "h-9 shrink-0 rounded-lg border border-input bg-transparent px-2 text-body",
-              "focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none",
+              "h-9 shrink-0 rounded-lg border border-border-dark bg-transparent px-2 text-body",
+              "focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
               "disabled:cursor-not-allowed disabled:opacity-50",
             )}
           >

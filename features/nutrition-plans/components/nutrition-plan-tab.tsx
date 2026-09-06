@@ -1,16 +1,16 @@
 "use client"
 
-import { History, Info, Pencil, Salad, Trash2 } from "lucide-react"
+import { Info, Pencil, Salad} from "lucide-react"
 import { useState } from "react"
 
 import { ErrorState } from "@/components/dashboard/error-state"
 import { ConfirmDialog } from "@/components/dashboard/confirm-dialog"
 import { EmptyState } from "@/components/dashboard/empty-state"
+import { PlanVersionHistory } from "@/components/shared/plan-version-history"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { formatDate } from "@/lib/format"
-import { cn } from "@/lib/utils"
 import {
   useCurrentNutritionPlan,
   useDeleteNutritionPlanVersion,
@@ -73,7 +73,7 @@ export function NutritionPlanTab({
     <p className="flex items-start gap-2 rounded-lg border border-border bg-secondary/50 p-3 text-body text-muted-foreground">
       <Info className="mt-0.5 size-4 shrink-0" />
       <span className="text-pretty">
-        El plan de suscripción de este alumno no incluye nutrición. Puedes asignarle uno igualmente,
+        El plan de suscripción de este alumno no incluye nutrición. Podés asignarle uno igualmente,
         pero conviene revisarlo con él.
       </span>
     </p>
@@ -118,7 +118,7 @@ export function NutritionPlanTab({
         <EmptyState
           icon={Salad}
           title="Este alumno aún no tiene plan nutricional"
-          description="Crea el primero con sus comidas y macros. Podrás calcularlos desde el catálogo de alimentos."
+          description="Creá el primero con sus comidas y macros. Podrás calcularlos desde el catálogo de alimentos."
           actionLabel="Crear plan"
           onAction={() =>
             setSession({ draft: emptyNutritionPlan(), planId: null, version: null })
@@ -180,46 +180,13 @@ export function NutritionPlanTab({
         )}
       </div>
 
-      {versions.length > 1 && (
-        <div className="flex flex-col gap-2">
-          <p className="flex items-center gap-1.5 text-caption text-muted-foreground">
-            <History className="size-3.5" />
-            Historial de versiones
-          </p>
-          <ul className="flex flex-wrap gap-2">
-            {versions.map((plan) => {
-              const active = viewing?.id === plan.id
-              return (
-                <li key={plan.id} className="flex items-center gap-1">
-                  <button
-                    type="button"
-                    onClick={() => setViewingId(plan.id)}
-                    className={cn(
-                      "rounded-lg border px-3 py-1.5 text-body transition-colors",
-                      "focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none",
-                      active
-                        ? "border-primary bg-primary/10 text-foreground"
-                        : "border-border text-muted-foreground hover:border-input",
-                    )}
-                  >
-                    v{plan.version}
-                    {plan.current && " · actual"}
-                  </button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    aria-label={`Eliminar versión ${plan.version}`}
-                    className="text-error-text focus-visible:text-error-text"
-                    onClick={() => setPendingDelete(plan)}
-                  >
-                    <Trash2 className="size-4" />
-                  </Button>
-                </li>
-              )
-            })}
-          </ul>
-        </div>
-      )}
+      <PlanVersionHistory
+        versions={versions}
+        activeId={viewing?.id ?? null}
+        noun="plan nutricional"
+        onSelect={setViewingId}
+        onDelete={setPendingDelete}
+      />
 
       {viewing && !viewing.current && (
         <p className="rounded-lg border border-border bg-secondary/50 p-3 text-body text-muted-foreground">

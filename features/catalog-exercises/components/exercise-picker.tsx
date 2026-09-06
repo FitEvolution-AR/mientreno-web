@@ -74,9 +74,9 @@ export function ExercisePicker({ open, onOpenChange, onPick }: ExercisePickerPro
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent side="right" className="w-full sm:max-w-2xl">
         <SheetHeader>
-          <SheetTitle>Añadir ejercicio</SheetTitle>
+          <SheetTitle>Agregar ejercicio</SheetTitle>
           <SheetDescription>
-            Elige uno del catálogo para que el plan herede grupo muscular, equipamiento e
+            Elegí uno del catálogo para que el plan herede grupo muscular, equipamiento e
             instrucciones.
           </SheetDescription>
         </SheetHeader>
@@ -95,7 +95,7 @@ export function ExercisePicker({ open, onOpenChange, onPick }: ExercisePickerPro
             isFetchingNextPage={search.isFetchingNextPage}
             onLoadMore={() => search.fetchNextPage()}
             onSelect={pickFromCatalogue}
-            actionLabel="Añadir"
+            actionLabel="Agregar"
             actionIcon="add"
           />
 
@@ -137,7 +137,7 @@ export function ExercisePicker({ open, onOpenChange, onPick }: ExercisePickerPro
                 disabled={!customName.trim()}
                 onClick={pickCustom}
               >
-                Añadir personalizado
+                Agregar personalizado
               </Button>
             </div>
           </section>

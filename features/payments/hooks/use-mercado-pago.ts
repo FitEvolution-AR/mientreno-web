@@ -48,7 +48,7 @@ export function useConnectMercadoPago() {
       window.location.assign(authorization.authorizationUrl)
     },
     onError: (error) =>
-      toast.error(errorMessage(error, "No se ha podido iniciar la vinculación con Mercado Pago")),
+      toast.error(errorMessage(error, "No pudimos iniciar la vinculación con Mercado Pago")),
   })
 }
 
@@ -77,6 +77,6 @@ export function useDisconnectMercadoPago() {
       toast.success("Cuenta de Mercado Pago desvinculada")
     },
     onError: (error) =>
-      toast.error(errorMessage(error, "No se ha podido desvincular la cuenta")),
+      toast.error(errorMessage(error, "No pudimos desvincular la cuenta")),
   })
 }

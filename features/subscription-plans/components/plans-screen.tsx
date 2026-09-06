@@ -1,6 +1,6 @@
 "use client"
 
-import { Apple, CreditCard, Pencil, Plus, Send, Trash2, Users, Wallet } from "lucide-react"
+import { Apple, CreditCard, Pencil, Plus, PowerOff, Send, Users, Wallet } from "lucide-react"
 import Link from "next/link"
 import { useState } from "react"
 
@@ -41,7 +41,7 @@ export function PlansScreen() {
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <p className="text-body text-muted-foreground text-pretty">
-          Crea y gestiona los planes de suscripción a los que pueden suscribirse tus alumnos.
+          Creá y gestioná los planes de suscripción a los que pueden suscribirse tus alumnos.
         </p>
         <Button onClick={openCreate} className="sm:shrink-0">
           <Plus className="size-4" />
@@ -134,7 +134,9 @@ export function PlansScreen() {
                     className="text-error-text focus-visible:text-error-text"
                     onClick={() => setPendingDelete(plan)}
                   >
-                    <Trash2 className="size-4" />
+                    {/* Apagar y no papelera: el plan sigue existiendo y los
+                        alumnos suscritos conservan su suscripción. */}
+                    <PowerOff className="size-4" />
                     Desactivar
                   </Button>
                 </div>

@@ -18,6 +18,7 @@ import {
 import { Switch } from "@/components/ui/switch"
 import { Textarea } from "@/components/ui/textarea"
 import { ApiError } from "@/core/http/errors"
+import { CURRENCY_SYMBOL } from "@/lib/format"
 import {
   BILLING_PERIODS,
   emptyPlanForm,
@@ -72,13 +73,13 @@ function PlanForm({ plan, onDone }: { plan: SubscriptionPlan | null; onDone: () 
     // `price` is @NotNull @Positive upstream, so zero is rejected too.
     const price = Number(values.price.replace(",", "."))
     if (!values.price.trim()) found.price = "El precio es obligatorio"
-    else if (!Number.isFinite(price)) found.price = "Introduce un número válido"
-    else if (price <= 0) found.price = "El precio debe ser mayor que 0"
+    else if (!Number.isFinite(price)) found.price = "Ingresá un número válido"
+    else if (price <= 0) found.price = "El precio debe ser mayor a 0"
 
     if (values.maxStudents.trim()) {
       const max = Number(values.maxStudents)
       if (!Number.isInteger(max) || max < 1) {
-        found.maxStudents = "Introduce un número entero de al menos 1"
+        found.maxStudents = "Ingresá un número entero de al menos 1"
       }
     }
 
@@ -102,7 +103,7 @@ function PlanForm({ plan, onDone }: { plan: SubscriptionPlan | null; onDone: () 
       <SheetHeader>
         <SheetTitle>{isEditing ? "Editar plan" : "Nuevo plan de suscripción"}</SheetTitle>
         <SheetDescription>
-          Define el precio y la periodicidad a la que se suscribirán tus alumnos.
+          Definí el precio y la periodicidad a la que se suscribirán tus alumnos.
         </SheetDescription>
       </SheetHeader>
 
@@ -148,16 +149,34 @@ function PlanForm({ plan, onDone }: { plan: SubscriptionPlan | null; onDone: () 
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="flex flex-col gap-2">
             <Label htmlFor="plan-price">
-              Precio ($) <span className="text-error-text">*</span>
+              Precio <span className="text-error-text">*</span>
             </Label>
-            <Input
-              id="plan-price"
-              inputMode="decimal"
-              value={values.price}
-              disabled={mutation.isPending}
-              placeholder="25000"
-              onChange={(event) => patch({ price: event.target.value })}
-            />
+            {/*
+              El símbolo solo no dice qué moneda es: `formatCurrency` renderiza
+              pesos argentinos en todo el resto del panel, y el entrenador está
+              fijando el número que el alumno va a pagar.
+            */}
+            <div className="relative">
+              <span
+                aria-hidden
+                className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-body text-muted-foreground"
+              >
+                {CURRENCY_SYMBOL}
+              </span>
+              <Input
+                id="plan-price"
+                inputMode="decimal"
+                value={values.price}
+                disabled={mutation.isPending}
+                placeholder="25000"
+                className="pl-7"
+                aria-describedby="plan-price-hint"
+                onChange={(event) => patch({ price: event.target.value })}
+              />
+            </div>
+            <p id="plan-price-hint" className="text-caption text-muted-foreground">
+              En pesos argentinos (ARS).
+            </p>
             {allErrors.price && <p className="text-body text-error-text">{allErrors.price}</p>}
           </div>
 
@@ -175,7 +194,7 @@ function PlanForm({ plan, onDone }: { plan: SubscriptionPlan | null; onDone: () 
               <p className="text-body text-error-text">{allErrors.maxStudents}</p>
             )}
             <p className="text-caption text-muted-foreground">
-              Déjalo vacío para no limitar las altas.
+              Dejalo vacío para no limitar las altas.
             </p>
           </div>
         </div>
