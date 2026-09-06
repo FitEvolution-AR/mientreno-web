@@ -1,16 +1,16 @@
 "use client"
 
-import { Dumbbell, History, Pencil, Trash2 } from "lucide-react"
+import { Dumbbell, Pencil} from "lucide-react"
 import { useState } from "react"
 
 import { ErrorState } from "@/components/dashboard/error-state"
 import { ConfirmDialog } from "@/components/dashboard/confirm-dialog"
 import { EmptyState } from "@/components/dashboard/empty-state"
+import { PlanVersionHistory } from "@/components/shared/plan-version-history"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import { formatDate } from "@/lib/format"
-import { cn } from "@/lib/utils"
 import {
   useCurrentTrainingPlan,
   useDeleteTrainingPlanVersion,
@@ -95,7 +95,7 @@ export function TrainingPlanTab({ subscriptionId }: { subscriptionId: number }) 
       <EmptyState
         icon={Dumbbell}
         title="Este alumno aún no tiene plan"
-        description="Crea el primero para que aparezca en su aplicación. Al publicarlo recibirá una notificación."
+        description="Creá el primero para que aparezca en su aplicación. Al publicarlo recibirá una notificación."
         actionLabel="Crear plan"
         onAction={() => setSession({ draft: emptyPlan(), planId: null, version: null })}
       />
@@ -152,46 +152,13 @@ export function TrainingPlanTab({ subscriptionId }: { subscriptionId: number }) 
         )}
       </div>
 
-      {versions.length > 1 && (
-        <div className="flex flex-col gap-2">
-          <p className="flex items-center gap-1.5 text-caption text-muted-foreground">
-            <History className="size-3.5" />
-            Historial de versiones
-          </p>
-          <ul className="flex flex-wrap gap-2">
-            {versions.map((plan) => {
-              const active = viewing?.id === plan.id
-              return (
-                <li key={plan.id} className="flex items-center gap-1">
-                  <button
-                    type="button"
-                    onClick={() => setViewingId(plan.id)}
-                    className={cn(
-                      "rounded-lg border px-3 py-1.5 text-body transition-colors",
-                      "focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none",
-                      active
-                        ? "border-primary bg-primary/10 text-foreground"
-                        : "border-border text-muted-foreground hover:border-input",
-                    )}
-                  >
-                    v{plan.version}
-                    {plan.current && " · actual"}
-                  </button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    aria-label={`Eliminar versión ${plan.version}`}
-                    className="text-error-text focus-visible:text-error-text"
-                    onClick={() => setPendingDelete(plan)}
-                  >
-                    <Trash2 className="size-4" />
-                  </Button>
-                </li>
-              )
-            })}
-          </ul>
-        </div>
-      )}
+      <PlanVersionHistory
+        versions={versions}
+        activeId={viewing?.id ?? null}
+        noun="plan"
+        onSelect={setViewingId}
+        onDelete={setPendingDelete}
+      />
 
       {viewing && !viewing.current && (
         <p className="rounded-lg border border-border bg-secondary/50 p-3 text-body text-muted-foreground">

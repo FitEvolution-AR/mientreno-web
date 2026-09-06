@@ -96,8 +96,8 @@ export function SpecialtyTagsInput({
           value={draft}
           disabled={disabled || atLimit}
           maxLength={MAX_SPECIALTY_LENGTH}
-          placeholder={atLimit ? "Has alcanzado el máximo" : "Escribe una especialidad y pulsa Intro"}
-          aria-label="Añadir especialidad"
+          placeholder={atLimit ? "Llegaste al máximo" : "Escribí una especialidad y apretá Intro"}
+          aria-label="Agregar especialidad"
           onChange={(event) => setDraft(event.target.value)}
           onKeyDown={(event) => {
             // Enter adds without submitting the profile form around it, and a
@@ -121,19 +121,19 @@ export function SpecialtyTagsInput({
           onClick={() => add(draft)}
         >
           <Plus className="size-4" />
-          Añadir
+          Agregar
         </Button>
       </div>
 
       {atLimit ? (
         <p className="text-caption text-muted-foreground">
-          Has alcanzado el máximo de {max} especialidades.
+          Llegaste al máximo de {max} especialidades.
         </p>
       ) : (
         suggestions.length > 0 && (
           <div className="flex flex-col gap-2">
             <p className="text-caption text-muted-foreground">
-              Sugerencias — también puedes escribir la tuya:
+              Sugerencias — también podés escribir la tuya:
             </p>
             <ul className="flex flex-wrap gap-2">
               {suggestions.map((name) => (

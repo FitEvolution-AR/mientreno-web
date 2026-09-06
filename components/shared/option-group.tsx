@@ -50,10 +50,10 @@ export function OptionGroup<T extends string>({
             htmlFor={id}
             className={cn(
               "flex cursor-pointer flex-col gap-0.5 rounded-lg border px-3 py-2 text-body transition-colors",
-              "focus-within:ring-3 focus-within:ring-ring/50",
+              "focus-within:ring-2 focus-within:ring-ring",
               checked
                 ? "border-primary bg-primary/10 text-foreground"
-                : "border-border bg-transparent text-muted-foreground hover:border-input",
+                : "border-border bg-transparent text-muted-foreground hover:border-border-dark",
               disabled && "cursor-not-allowed opacity-50",
             )}
           >

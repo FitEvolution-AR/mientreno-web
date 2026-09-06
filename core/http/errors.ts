@@ -55,6 +55,25 @@ export class ApiError extends Error {
 }
 
 /**
+ * The field errors a form did not render itself.
+ *
+ * `MethodArgumentNotValidException` keys a nested list by its path —
+ * `days[0].exercises[1].name`, not `exercises` — so a form that only looks up
+ * the handful of keys it knows about drops those messages on the floor and
+ * shows nothing at all for a 400. Everything unclaimed comes back here so the
+ * editor can print it rather than sit silent.
+ */
+export function unclaimedFieldErrors(
+  fieldErrors: Record<string, string>,
+  claimed: readonly string[],
+): string[] {
+  const known = new Set(claimed)
+  return Object.entries(fieldErrors)
+    .filter(([field]) => !known.has(field))
+    .map(([, message]) => message)
+}
+
+/**
  * Wording of last resort, for a response whose body carried no message.
  *
  * These are already user-facing: `core/http/user-message.ts` overrides the

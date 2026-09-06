@@ -48,7 +48,7 @@ export function FoodFilters({ value, categories, onChange, disabled }: FoodFilte
                     onClick={() =>
                       onChange({ ...value, category: active ? null : category })
                     }
-                    className="rounded-full focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none disabled:opacity-50"
+                    className="rounded-full focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none disabled:opacity-50"
                   >
                     <Badge variant={active ? "default" : "secondary"} className="cursor-pointer">
                       {category}

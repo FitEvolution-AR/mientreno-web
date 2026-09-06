@@ -56,6 +56,59 @@ export function useModerateProduct() {
   })
 }
 
+/**
+ * Approves several products under one confirmation.
+ *
+ * Sequential and not `Promise.all`: each call is a separate write against the
+ * same brand's rows, and a burst of parallel ones is how a queue of five turns
+ * into a partial, unordered mess upstream. A failure does not abort the rest —
+ * the moderator asked for all of them — so the result reports both halves and
+ * the toast says exactly what got through.
+ */
+export function useBulkApproveProducts() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: async (productIds: number[]) => {
+      const approved: string[] = []
+      const failed: number[] = []
+
+      for (const productId of productIds) {
+        try {
+          const product = await adminRepository.moderate(productId, "APPROVED")
+          approved.push(product.name)
+        } catch {
+          failed.push(productId)
+        }
+      }
+
+      return { approved, failed }
+    },
+
+    onSuccess: ({ approved, failed }) => {
+      queryClient.invalidateQueries({ queryKey: qk.admin.all })
+      queryClient.invalidateQueries({ queryKey: qk.brand.all })
+
+      if (approved.length > 0) {
+        toast.success(
+          approved.length === 1
+            ? `${approved[0]} ya está en el catálogo.`
+            : `${approved.length} productos ya están en el catálogo.`,
+        )
+      }
+      if (failed.length > 0) {
+        toast.error(
+          failed.length === 1
+            ? "Un producto no se pudo aprobar. Siguen en la cola."
+            : `${failed.length} productos no se pudieron aprobar. Siguen en la cola.`,
+        )
+      }
+    },
+
+    onError: (error) => toast.error(userMessage(error, "save")),
+  })
+}
+
 export function useSetBrandStatus() {
   const queryClient = useQueryClient()
 

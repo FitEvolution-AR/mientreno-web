@@ -3,12 +3,15 @@
 import { Loader2, Plus, Save, Upload } from "lucide-react"
 import { useMemo, useState } from "react"
 
+import { ConfirmDialog } from "@/components/dashboard/confirm-dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { ApiError } from "@/core/http/errors"
+import { useUnsavedChanges } from "@/core/hooks/use-unsaved-changes"
+import { ApiError, unclaimedFieldErrors } from "@/core/http/errors"
 import {
+  cloneMeal,
   emptyMeal,
   sumMealMacros,
   type EditorMeal,
@@ -37,7 +40,14 @@ interface NutritionPlanEditorProps {
  * The one difference is that publishing here does **not** notify the student —
  * `NutritionPlanService.create` sends no notification — so the copy does not
  * promise one.
+ *
+ * The draft lives only in React state, so every exit is guarded the same way
+ * the training editor guards its own: `useUnsavedChanges` for the browser's
+ * exits, a confirmation for this form's.
  */
+/** The keys this form renders itself; anything else the backend sends is spare. */
+const CLAIMED_FIELDS = ["title", "notes", "meals", "mealName", "foods"] as const
+
 export function NutritionPlanEditor({
   value,
   onChange,
@@ -50,9 +60,25 @@ export function NutritionPlanEditor({
   onCancel,
 }: NutritionPlanEditorProps) {
   const [errors, setErrors] = useState<Record<string, string>>({})
+  /** Per-meal messages, keyed by `EditorMeal.key`. */
+  const [mealErrors, setMealErrors] = useState<Record<string, string>>({})
+  const [confirmingCancel, setConfirmingCancel] = useState(false)
 
   const serverErrors = error instanceof ApiError ? error.fieldErrors : {}
   const allErrors = { ...serverErrors, ...errors }
+
+  /*
+   * Bean validation keys a nested list by its path — `meals[0].foods[1].quantity`
+   * — so a 400 about a food used to leave this form silent.
+   */
+  const spareServerErrors = unclaimedFieldErrors(serverErrors, CLAIMED_FIELDS)
+
+  // Snapshot of the draft as it was opened; the component is not remounted
+  // while editing. Lazy initial state, not a ref — a ref would be read during
+  // render.
+  const [baseline] = useState(() => JSON.stringify(value))
+  const isDirty = useMemo(() => baseline !== JSON.stringify(value), [baseline, value])
+  useUnsavedChanges(isDirty && !isPending)
 
   const totals = useMemo(
     () =>
@@ -85,24 +111,53 @@ export function NutritionPlanEditor({
 
   function validate(): boolean {
     const found: Record<string, string> = {}
+    const perMeal: Record<string, string> = {}
 
     if (!value.title.trim()) found.title = "El título es obligatorio"
     if (value.meals.length === 0) found.meals = "El plan necesita al menos una comida"
 
-    // `MealRequest.name` is @NotBlank upstream.
-    if (value.meals.some((meal) => !meal.name.trim())) {
-      found.mealName = "Cada comida necesita un nombre"
+    for (const meal of value.meals) {
+      // `MealRequest.name` is @NotBlank upstream.
+      if (!meal.name.trim()) {
+        perMeal[meal.key] = "Esta comida necesita un nombre"
+        continue
+      }
+
+      // `MealFoodRequest.quantity` is @NotNull, so a food with no quantity
+      // would be sent as 0 — flag it instead of writing a meaningless value.
+      const badQuantity = meal.foods.some(
+        (food) => food.foodName.trim() && parseOrNull(food.quantity) === null,
+      )
+      if (badQuantity) perMeal[meal.key] = "Hay un alimento sin cantidad"
     }
 
-    // `MealFoodRequest.quantity` is @NotNull, so a food with no quantity would
-    // be sent as 0 — flag it instead of silently writing a meaningless value.
-    const badQuantity = value.meals.some((meal) =>
-      meal.foods.some((food) => food.foodName.trim() && parseOrNull(food.quantity) === null),
-    )
-    if (badQuantity) found.foods = "Cada alimento necesita una cantidad"
+    const flagged = Object.keys(perMeal).length
+    if (flagged > 0) {
+      found.mealName =
+        flagged === 1
+          ? "Hay una comida incompleta, marcada abajo."
+          : `Hay ${flagged} comidas incompletas, marcadas abajo.`
+    }
 
     setErrors(found)
+    setMealErrors(perMeal)
     return Object.keys(found).length === 0
+  }
+
+  /** Inserted right after the original, which is where the trainer is looking. */
+  function duplicateMeal(index: number) {
+    const meals = [...value.meals]
+    meals.splice(index + 1, 0, cloneMeal(value.meals[index]))
+    onChange({ ...value, meals })
+  }
+
+  function handleCancel() {
+    if (!onCancel) return
+    if (isDirty) {
+      setConfirmingCancel(true)
+      return
+    }
+    onCancel()
   }
 
   function submit(action: () => void) {
@@ -160,13 +215,23 @@ export function NutritionPlanEditor({
             }
           >
             <Plus className="size-4" />
-            Añadir comida
+            Agregar comida
           </Button>
         </div>
 
         {allErrors.meals && <p className="text-body text-error-text">{allErrors.meals}</p>}
         {allErrors.mealName && <p className="text-body text-error-text">{allErrors.mealName}</p>}
         {allErrors.foods && <p className="text-body text-error-text">{allErrors.foods}</p>}
+
+        {spareServerErrors.length > 0 && (
+          <ul className="flex flex-col gap-1 rounded-lg border border-error/40 bg-error-surface p-3 text-body text-error-text">
+            {spareServerErrors.map((message) => (
+              <li key={message} className="text-pretty">
+                {message}
+              </li>
+            ))}
+          </ul>
+        )}
 
         <ul className="flex flex-col gap-4">
           {value.meals.map((meal, index) => (
@@ -176,10 +241,12 @@ export function NutritionPlanEditor({
               index={index}
               total={value.meals.length}
               disabled={isPending}
+              error={mealErrors[meal.key]}
               onChange={(patch) => patchMeal(index, patch)}
               onRemove={() =>
                 onChange({ ...value, meals: value.meals.filter((_, i) => i !== index) })
               }
+              onDuplicate={() => duplicateMeal(index)}
               onMove={(direction) => moveMeal(index, direction)}
             />
           ))}
@@ -194,7 +261,7 @@ export function NutritionPlanEditor({
 
         <div className="flex flex-wrap gap-2 sm:shrink-0">
           {onCancel && (
-            <Button type="button" variant="ghost" disabled={isPending} onClick={onCancel}>
+            <Button type="button" variant="ghost" disabled={isPending} onClick={handleCancel}>
               Cancelar
             </Button>
           )}
@@ -220,6 +287,19 @@ export function NutritionPlanEditor({
           </Button>
         </div>
       </div>
+
+      <ConfirmDialog
+        open={confirmingCancel}
+        onOpenChange={setConfirmingCancel}
+        title="¿Descartar los cambios?"
+        description="Lo que editaste en este plan se pierde. No se guarda ningún borrador."
+        confirmLabel="Descartar"
+        destructive
+        onConfirm={() => {
+          setConfirmingCancel(false)
+          onCancel?.()
+        }}
+      />
     </form>
   )
 }

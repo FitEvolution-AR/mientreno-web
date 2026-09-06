@@ -30,7 +30,7 @@ export function BrandSidebar({ initialName }: { initialName?: string | null }) {
   const pathname = usePathname()
 
   return (
-    <aside className="hidden w-64 shrink-0 flex-col border-r border-sidebar-border bg-sidebar bg-linear-to-b from-sidebar-accent/70 via-sidebar to-sidebar md:flex">
+    <aside className="hidden w-64 shrink-0 flex-col border-r border-sidebar-border bg-sidebar md:flex">
       <BrandCard initialName={initialName} />
 
       <nav className="flex flex-1 flex-col gap-1.5 p-3" aria-label="Primary">
@@ -61,7 +61,7 @@ function BrandCard({ initialName }: { initialName?: string | null }) {
     <Link
       href="/comercio/perfil"
       title="Editar mi comercio"
-      className="group flex flex-col items-center gap-3 border-b border-sidebar-border px-6 pt-7 pb-6 outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring/60 focus-visible:ring-inset"
+      className="group flex flex-col items-center gap-3 border-b border-sidebar-border px-6 pt-7 pb-6 outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring focus-visible:ring-inset"
     >
       {isLoading ? (
         <>
@@ -101,7 +101,7 @@ function BrandCard({ initialName }: { initialName?: string | null }) {
 }
 
 const FOOTER_ROW =
-  "group flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-body font-medium text-sidebar-foreground/60 outline-none transition-all duration-300 ease-out focus-visible:ring-2 focus-visible:ring-sidebar-ring/60 motion-reduce:transition-none"
+  "group flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-body font-medium text-sidebar-foreground/60 outline-none transition-colors duration-200 ease-out focus-visible:ring-2 focus-visible:ring-sidebar-ring motion-reduce:transition-none"
 
 function SignOutFooter() {
   const logout = useLogout()
@@ -113,7 +113,7 @@ function SignOutFooter() {
         onClick={logout}
         className={cn(FOOTER_ROW, "hover:bg-destructive/15 hover:text-destructive")}
       >
-        <LogOut className="size-5 transition-transform duration-300 ease-out group-hover:translate-x-0.5 motion-reduce:transition-none motion-reduce:group-hover:translate-x-0" />
+        <LogOut className="size-5 transition-transform duration-200 ease-out group-hover:translate-x-0.5 motion-reduce:transition-none motion-reduce:group-hover:translate-x-0" />
         Cerrar sesión
       </button>
     </div>

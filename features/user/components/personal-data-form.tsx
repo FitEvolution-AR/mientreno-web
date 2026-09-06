@@ -111,7 +111,7 @@ function PersonalDataFields({ profile }: { profile: UserProfile }) {
           <Label htmlFor="pd-email">Correo electrónico</Label>
           <Input id="pd-email" value={profile.email} disabled readOnly />
           <p className="text-caption text-muted-foreground">
-            El correo no se puede cambiar desde aquí.
+            El correo no se puede cambiar desde acá.
           </p>
         </div>
 
@@ -119,7 +119,7 @@ function PersonalDataFields({ profile }: { profile: UserProfile }) {
           <Label htmlFor="pd-phone">Teléfono</Label>
           <Input id="pd-phone" value={profile.phone} disabled readOnly />
           <p className="text-caption text-muted-foreground">
-            El teléfono no se puede cambiar desde aquí.
+            El teléfono no se puede cambiar desde acá.
           </p>
         </div>
 

@@ -20,7 +20,7 @@ interface ExerciseListProps {
   isFetchingNextPage: boolean
   onLoadMore: () => void
   onSelect: (exercise: CatalogExercise) => void
-  /** Label of the per-row action. "Ver" when browsing, "Añadir" when picking. */
+  /** Label of the per-row action. "Ver" when browsing, "Agregar" when picking. */
   actionLabel?: string
   actionIcon?: "view" | "add"
 }
@@ -60,7 +60,7 @@ export function ExerciseList({
       <EmptyState
         icon={SearchX}
         title="Ningún ejercicio coincide"
-        description="Prueba con otro término o quita alguno de los filtros."
+        description="Probá con otro término o sacá alguno de los filtros."
       />
     )
   }

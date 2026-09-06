@@ -23,7 +23,8 @@ export function SidebarLink({ item, active }: { item: NavItem; active: boolean }
       aria-current={active ? "page" : undefined}
       className={cn(
         "group relative flex items-center gap-3 rounded-xl py-2.5 pr-3 pl-6 text-body font-medium",
-        "transition-all duration-300 ease-out motion-reduce:transition-none",
+        "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sidebar-ring",
+        "transition-[background-color,color,transform] duration-200 ease-out motion-reduce:transition-none",
         active
           ? "bg-sidebar-accent text-sidebar-accent-foreground"
           : "text-sidebar-foreground/60 hover:translate-x-0.5 hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground motion-reduce:hover:translate-x-0",
@@ -32,7 +33,7 @@ export function SidebarLink({ item, active }: { item: NavItem; active: boolean }
       {active && <DumbbellIndicator />}
       <Icon
         className={cn(
-          "size-5 transition-transform duration-300 ease-out group-hover:scale-110 motion-reduce:transition-none motion-reduce:group-hover:scale-100",
+          "size-5 transition-transform duration-200 ease-out group-hover:scale-110 motion-reduce:transition-none motion-reduce:group-hover:scale-100",
           active && "text-primary",
         )}
       />
@@ -52,7 +53,7 @@ function DumbbellIndicator() {
     <svg
       viewBox="0 0 14 44"
       aria-hidden
-      className="absolute top-1/2 left-1.5 h-7 w-2.5 -translate-y-1/2 fill-primary drop-shadow-[0_0_5px_var(--primary)] duration-500 ease-out animate-in fade-in zoom-in-50 slide-in-from-left-2 motion-reduce:animate-none"
+      className="absolute top-1/2 left-1.5 h-7 w-2.5 -translate-y-1/2 fill-primary duration-200 ease-out animate-in fade-in zoom-in-50 slide-in-from-left-2 motion-reduce:animate-none"
     >
       {/* Outer plate, inner plate, handle, and the same pair mirrored. */}
       <rect x="0" y="4" width="14" height="6" rx="3" />

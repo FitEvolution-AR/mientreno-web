@@ -114,12 +114,12 @@ function ExerciseView({
       <div className="mt-2 flex items-center gap-2">
         <Button variant="ghost" size="sm" onClick={onManageVideos}>
           <Film className="size-4" />
-          {exercise.mediaUrl ? "Ver y gestionar vídeos" : "Añadir vídeo"}
+          {exercise.mediaUrl ? "Ver y gestionar videos" : "Agregar video"}
         </Button>
         {exercise.mediaUrl && (
           <Badge variant="secondary" className="gap-1">
             <Video className="size-3" />
-            Con vídeo
+            Con video
           </Badge>
         )}
       </div>

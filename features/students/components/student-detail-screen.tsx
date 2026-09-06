@@ -3,7 +3,9 @@
 import { ArrowLeft, Pause, Play } from "lucide-react"
 import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
+import { useState } from "react"
 
+import { ConfirmDialog } from "@/components/dashboard/confirm-dialog"
 import { ErrorState } from "@/components/dashboard/error-state"
 import { StatusBadge } from "@/components/dashboard/status-badge"
 import { UserAvatar } from "@/components/shared/user-avatar"
@@ -21,6 +23,8 @@ import { canPause, canResume } from "../model/student.model"
 
 const TABS = ["summary", "training", "nutrition", "progress"] as const
 
+type Tab = (typeof TABS)[number]
+
 /**
  * Student detail as a route rather than a drawer.
  *
@@ -36,9 +40,24 @@ export function StudentDetailScreen({ subscriptionId }: { subscriptionId: number
   const params = useSearchParams()
   const router = useRouter()
 
-  // The consolidated plans view links straight to a tab.
+  const [pendingPause, setPendingPause] = useState(false)
+
+  /*
+   * The URL owns the open tab.
+   *
+   * It used to be `defaultValue` only, so the deep link worked on the way in
+   * (the consolidated plans view links straight to `?tab=training`) and not on
+   * the way out: a refresh dropped the trainer back on "Resumen" and the tab
+   * could not be shared or bookmarked. `push` rather than `replace` so the back
+   * button walks back through the tabs before leaving the student.
+   */
   const requestedTab = params.get("tab")
-  const defaultTab = TABS.find((tab) => tab === requestedTab) ?? "summary"
+  const activeTab: Tab = TABS.find((tab) => tab === requestedTab) ?? "summary"
+
+  function openTab(tab: string) {
+    if (tab === activeTab) return
+    router.push(`/dashboard/students/${subscriptionId}?tab=${tab}`, { scroll: false })
+  }
 
   // `?session=<id>` is the only entry point to a workout session today: nothing
   // lists them for a trainer (see workout-sessions.repository.ts).
@@ -89,11 +108,14 @@ export function StudentDetailScreen({ subscriptionId }: { subscriptionId: number
         </div>
 
         <div className="flex gap-2 sm:shrink-0">
+          {/* Misma acción, misma red de seguridad que en la lista de alumnos:
+              acá se disparaba directo, así que pausar era más peligroso desde
+              el detalle que desde el listado. */}
           {canPause(data.status) && (
             <Button
               variant="outline"
               disabled={status.isPending}
-              onClick={() => status.mutate({ subscriptionId, action: "pause" })}
+              onClick={() => setPendingPause(true)}
             >
               <Pause className="size-4" />
               Pausar
@@ -112,7 +134,7 @@ export function StudentDetailScreen({ subscriptionId }: { subscriptionId: number
         </div>
       </header>
 
-      <Tabs defaultValue={defaultTab}>
+      <Tabs value={activeTab} onValueChange={(value) => openTab(String(value))}>
         <TabsList>
           <TabsTrigger value="summary">Resumen</TabsTrigger>
           <TabsTrigger value="training">Entrenamiento</TabsTrigger>
@@ -169,6 +191,21 @@ export function StudentDetailScreen({ subscriptionId }: { subscriptionId: number
           // of truth for this sheet.
           if (!open) router.replace(`/dashboard/students/${subscriptionId}?tab=progress`)
         }}
+      />
+
+      <ConfirmDialog
+        open={pendingPause}
+        onOpenChange={setPendingPause}
+        title={`¿Pausar la suscripción de ${data.studentName}?`}
+        description="El alumno dejará de tener acceso a sus planes hasta que la reanudes. Podés reanudarla desde acá o desde la lista de alumnos."
+        confirmLabel="Pausar"
+        loading={status.isPending}
+        onConfirm={() =>
+          status.mutate(
+            { subscriptionId, action: "pause" },
+            { onSettled: () => setPendingPause(false) },
+          )
+        }
       />
     </div>
   )

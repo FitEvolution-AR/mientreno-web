@@ -1,14 +1,16 @@
 "use client"
 
-import { ChevronDown, ChevronUp, Moon, Plus, Trash2 } from "lucide-react"
+import { ChevronDown, ChevronUp, Copy, Moon, Plus, Trash2 } from "lucide-react"
 import { useState } from "react"
 
+import { ConfirmDialog } from "@/components/dashboard/confirm-dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { ExercisePicker, type PickedExercise } from "@/features/catalog-exercises/components/exercise-picker"
 import {
+  cloneExercise,
   emptyExercise,
   nextKey,
   type EditorDay,
@@ -21,8 +23,11 @@ interface TrainingDayEditorProps {
   index: number
   total: number
   disabled?: boolean
+  /** Validation messages keyed by `EditorExercise.key`. */
+  exerciseErrors?: Record<string, string>
   onChange: (patch: Partial<EditorDay>) => void
   onRemove: () => void
+  onDuplicate: () => void
   onMove: (direction: -1 | 1) => void
 }
 
@@ -31,11 +36,14 @@ export function TrainingDayEditor({
   index,
   total,
   disabled,
+  exerciseErrors,
   onChange,
   onRemove,
+  onDuplicate,
   onMove,
 }: TrainingDayEditorProps) {
   const [pickerOpen, setPickerOpen] = useState(false)
+  const [confirmingRemove, setConfirmingRemove] = useState(false)
 
   function patchExercise(exerciseIndex: number, patch: Partial<EditorExercise>) {
     onChange({
@@ -47,6 +55,13 @@ export function TrainingDayEditor({
 
   function removeExercise(exerciseIndex: number) {
     onChange({ exercises: day.exercises.filter((_, i) => i !== exerciseIndex) })
+  }
+
+  /** Inserted right below the original, which is where the trainer is looking. */
+  function duplicateExercise(exerciseIndex: number) {
+    const exercises = [...day.exercises]
+    exercises.splice(exerciseIndex + 1, 0, cloneExercise(day.exercises[exerciseIndex]))
+    onChange({ exercises })
   }
 
   function moveExercise(exerciseIndex: number, direction: -1 | 1) {
@@ -68,6 +83,24 @@ export function TrainingDayEditor({
       equipment: picked.equipment,
     }
     onChange({ exercises: [...day.exercises, exercise] })
+  }
+
+  /*
+   * Un día con ejercicios adentro no se borra de un click.
+   *
+   * El botón está a dos píxeles de las flechas de orden, no hay deshacer y lo
+   * que se lleva puesto no es una fila sino toda la sesión: series, cargas,
+   * descansos y notas. Un día vacío sí se va sin preguntar — no hay nada que
+   * perder y preguntar sería ruido.
+   */
+  const removeNeedsConfirmation = day.exercises.length > 0
+
+  function handleRemove() {
+    if (removeNeedsConfirmation) {
+      setConfirmingRemove(true)
+      return
+    }
+    onRemove()
   }
 
   return (
@@ -118,6 +151,19 @@ export function TrainingDayEditor({
           >
             <ChevronDown className="size-4" />
           </Button>
+          {/* Armar la semana 2 retipeando la semana 1 era el gasto de tiempo
+              más grande del editor. */}
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            disabled={disabled}
+            aria-label={`Duplicar día ${index + 1}`}
+            title="Duplicar día"
+            onClick={onDuplicate}
+          >
+            <Copy className="size-4" />
+          </Button>
           <Button
             type="button"
             variant="ghost"
@@ -125,7 +171,7 @@ export function TrainingDayEditor({
             disabled={disabled || total === 1}
             aria-label="Quitar día"
             className="text-error-text focus-visible:text-error-text"
-            onClick={onRemove}
+            onClick={handleRemove}
           >
             <Trash2 className="size-4" />
           </Button>
@@ -136,7 +182,7 @@ export function TrainingDayEditor({
         <p className="rounded-lg border border-dashed border-border p-4 text-body text-muted-foreground text-pretty">
           {/* `buildDays` skips exercises when `restDay` is true, so anything
               added here would be discarded server-side. */}
-          Día de descanso. No se guardan ejercicios aunque los añadas.
+          Día de descanso. No se guardan ejercicios aunque los agregues.
         </p>
       ) : (
         <>
@@ -153,8 +199,10 @@ export function TrainingDayEditor({
                   index={exerciseIndex}
                   total={day.exercises.length}
                   disabled={disabled}
+                  error={exerciseErrors?.[exercise.key]}
                   onChange={(patch) => patchExercise(exerciseIndex, patch)}
                   onRemove={() => removeExercise(exerciseIndex)}
+                  onDuplicate={() => duplicateExercise(exerciseIndex)}
                   onMove={(direction) => moveExercise(exerciseIndex, direction)}
                 />
               ))}
@@ -169,12 +217,27 @@ export function TrainingDayEditor({
             onClick={() => setPickerOpen(true)}
           >
             <Plus className="size-4" />
-            Añadir ejercicio
+            Agregar ejercicio
           </Button>
         </>
       )}
 
       <ExercisePicker open={pickerOpen} onOpenChange={setPickerOpen} onPick={addFromPicker} />
+
+      <ConfirmDialog
+        open={confirmingRemove}
+        onOpenChange={setConfirmingRemove}
+        title={`¿Quitar el día ${index + 1}?`}
+        description={`Se van con él ${day.exercises.length} ${
+          day.exercises.length === 1 ? "ejercicio" : "ejercicios"
+        } con sus series, cargas y notas. No se puede deshacer.`}
+        confirmLabel="Quitar día"
+        destructive
+        onConfirm={() => {
+          setConfirmingRemove(false)
+          onRemove()
+        }}
+      />
     </li>
   )
 }

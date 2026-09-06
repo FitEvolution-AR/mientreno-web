@@ -25,7 +25,7 @@ export function NotificationsScreen() {
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <p className="text-body text-muted-foreground">
           {unread > 0
-            ? `Tienes ${unread} ${unread === 1 ? "notificación sin leer" : "notificaciones sin leer"}.`
+            ? `Tenés ${unread} ${unread === 1 ? "notificación sin leer" : "notificaciones sin leer"}.`
             : "Estás al día."}
         </p>
 
@@ -55,8 +55,8 @@ export function NotificationsScreen() {
       {!list.isLoading && !list.isError && list.notifications.length === 0 && (
         <EmptyState
           icon={Bell}
-          title="No tienes notificaciones"
-          description="Te avisaremos aquí cuando un alumno se suscriba a uno de tus planes."
+          title="No tenés notificaciones"
+          description="Te avisaremos acá cuando un alumno se suscriba a uno de tus planes."
         />
       )}
 
@@ -67,7 +67,9 @@ export function NotificationsScreen() {
               <NotificationItem
                 key={notification.id}
                 notification={notification}
-                isPending={markRead.isPending}
+                // Sólo la fila en vuelo: `isPending` a secas desactivaba el
+                // botón de todas las no leídas a la vez.
+                isPending={markRead.isPending && markRead.variables === notification.id}
                 onMarkRead={(id) => markRead.mutate(id)}
               />
             ))}

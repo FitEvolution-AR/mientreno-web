@@ -123,6 +123,7 @@
   --color-border-dark: var(--border-dark);
   --color-input: var(--input);
   --color-ring: var(--ring);
+  --color-ring-focus: var(--ring);
 
   /* ── Sidebar (deriva de azulFuerte) ────────────────────────────────── */
   --color-sidebar: var(--sidebar);
@@ -186,7 +187,18 @@
   --popover: #ffffff;
   --popover-foreground: #1a1a1a;
   --foreground-secondary: #081324;
-  --muted-foreground: #6b7280;
+  /* El texto secundario se lee sobre TRES superficies, y la más oscura manda:
+     #6B7280 pasaba sobre `card` (#FFFFFF, 4.83:1) pero se quedaba en 4.39:1
+     sobre `background` (#F2F4F7) — justo donde viven EmptyState y ErrorState.
+     Los mensajes de vacío y de error eran el texto menos legible del panel.
+     #636B78 arreglaba esas dos (4.88:1 y 5.38:1) pero se quedaba en 4.34:1
+     sobre `muted` (#E5E7EB), que es el relleno de TabsList: la pestaña inactiva
+     era el tercer caso y no estaba contemplado.
+     #5B626E da 4.96:1 sobre `muted`, 5.58:1 sobre el fondo y 6.15:1 sobre la
+     tarjeta — las tres con margen. */
+  --muted-foreground: #5b626e;
+  /* Sin ratio mínimo a propósito: WCAG exime al texto deshabilitado, y
+     subirlo lo haría pasar por activo. */
   --foreground-disabled: #9ca3af;
 
   /* ct — marca */
@@ -214,11 +226,16 @@
      #FFFFFF sobre #FF7A00 se queda en 2.9:1 y no llega a AA. */
   --warning-foreground: #081324;
   --warning-surface: #ff7a0033;
-  --warning-text: #b45309;
+  /* Los `*-text` se miden contra su propio `*-surface`, no contra la tarjeta:
+     así los usa StatusBadge, en 12px. #B45309 sobre #FFE4CC daba 4.12:1.
+     #9A4409 da 5.37:1 ahí y 6.55:1 sobre blanco. */
+  --warning-text: #9a4409;
   --destructive: #ff4d4d;
   --destructive-foreground: #081324;
   --error-surface: #ff4d4d33;
-  --error-text: #dc2626;
+  /* Ídem: #DC2626 sobre #FFDBDB daba 3.77:1 en el badge EXPIRED.
+     #B91C1C da 5.06:1 sobre la superficie y 6.47:1 sobre blanco. */
+  --error-text: #b91c1c;
 
   /* ct — overlays y deshabilitado */
   --overlay-light: rgba(255, 255, 255, 0.8);
@@ -230,8 +247,16 @@
   --border: #e5e7eb;
   --border-dark: #6b7280;
   --input: #e5e7eb;
-  --focus: #7ed957;
-  --ring: #7ed957;
+  /* El foco NO puede ser el verde de marca. `--ring` era `#7ED957`, el mismo
+     valor que `--primary`, así que el anillo del CTA de cada pantalla se
+     dibujaba verde sobre verde: 1.00:1. Sobre una tarjeta blanca daba 1.76:1 y
+     sobre `background` 1.59:1 — los tres por debajo del 3:1 que pide 1.4.11.
+     El navy da 10.6:1 contra el botón verde y 15.9:1 contra blanco, así que un
+     único token sirve para relleno y para borde.
+     Excepción: `--sidebar-ring` sigue verde porque ahí el fondo es este mismo
+     navy; los links del sidebar y de la barra inferior lo piden a mano. */
+  --focus: #081324;
+  --ring: #081324;
 
   /* radius.lg — radio por defecto del kit */
   --radius: 16px;
@@ -249,7 +274,19 @@
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border;
+  }
+  /*
+   * Foco por defecto de todo lo que no trae uno propio — los links del sidebar
+   * y de la barra inferior, sobre todo. Antes esto era `outline-ring/50` sobre
+   * `*`, que sólo cambiaba el color: reemplazaba el anillo de alto contraste
+   * del navegador por un verde de marca al 50% (1.33:1 sobre blanco), sin
+   * declarar ancho ni estilo. Las utilidades de Tailwind ganan a la capa base,
+   * así que un componente con `focus-visible:` propio sigue mandando.
+   */
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
   }
   body {
     /* TEXT_STYLES.body — Montserrat 14/21 */
@@ -261,5 +298,28 @@
   /* TEXT_STYLES.display / title / subtitle — Oswald */
   h1, h2, h3, h4 {
     @apply font-heading tracking-tight;
+  }
+
+  /*
+   * `SidebarLink` maneja la preferencia utilidad por utilidad, pero era el
+   * único: las entradas de los sheets, los diálogos y los toasts se animaban
+   * igual con `prefers-reduced-motion: reduce` puesto.
+   */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+    /* Los spinners son indicadores de progreso, no decoración: congelarlos
+       hace que una pantalla que está cargando parezca colgada. Siguen
+       girando, más lento. */
+    .animate-spin {
+      animation-duration: 1.5s !important;
+      animation-iteration-count: infinite !important;
+    }
   }
 }

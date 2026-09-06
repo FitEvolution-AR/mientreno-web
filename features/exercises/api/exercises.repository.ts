@@ -69,7 +69,7 @@ export const exercisesRepository = {
       })
 
       request.addEventListener("error", () =>
-        reject(new ApiError({ kind: "network", message: "No se ha podido subir el vídeo" })),
+        reject(new ApiError({ kind: "network", message: "No pudimos subir el video" })),
       )
 
       request.addEventListener("abort", () =>

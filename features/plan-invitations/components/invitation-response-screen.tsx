@@ -38,7 +38,7 @@ const STUDENT_BRAND: AuthBrandCopy = {
       <span className="text-brand-green">esperando.</span>
     </>
   ),
-  copy: "Revisa la propuesta de tu entrenador y respóndele en un minuto.",
+  copy: "Revisá la propuesta de tu entrenador y respondele en un minuto.",
   features: [
     { icon: Dumbbell, label: "Entrenamientos guiados semana a semana" },
     { icon: Apple, label: "Pauta de nutrición si tu plan la incluye" },
@@ -70,7 +70,7 @@ export function InvitationResponseScreen({ token }: { token: string }) {
       brand={STUDENT_BRAND}
       footer={
         <>
-          ¿Eres entrenador? Entra en el panel desde{" "}
+          ¿Sos entrenador? Entrá al panel desde{" "}
           <a
             href="/login"
             className="font-semibold text-primary-text underline underline-offset-4 hover:text-foreground"
@@ -129,10 +129,10 @@ function LoadError({ error }: { error: unknown }) {
 
   const message =
     status === 404 || status === 410
-      ? "Esta invitación ya no existe o ha caducado. Pide a tu entrenador que te la envíe de nuevo."
+      ? "Esta invitación ya no existe o venció. Pedile a tu entrenador que te la mande de nuevo."
       : error instanceof ApiError
         ? error.message
-        : "No hemos podido cargar la invitación. Inténtalo de nuevo en unos minutos."
+        : "No pudimos cargar la invitación. Volvé a intentarlo en unos minutos."
 
   return (
     <div className="flex flex-col items-center gap-3 py-6 text-center">
@@ -226,7 +226,7 @@ function Offer({
         <p className="rounded-lg border border-error/40 bg-error-surface p-3 text-body text-error-text text-pretty">
           {error instanceof ApiError
             ? error.message
-            : "No se ha podido registrar tu respuesta. Inténtalo de nuevo."}
+            : "No pudimos registrar tu respuesta. Volvé a intentarlo."}
         </p>
       )}
 
@@ -321,7 +321,7 @@ function Accepted({
       <CreditCard className="size-10 text-muted-foreground" />
       <div>
         <h1 className="text-title font-semibold tracking-tight text-balance">
-          Has aceptado la propuesta
+          Aceptaste la propuesta
         </h1>
         <p className="mt-2 max-w-prose text-body text-muted-foreground text-pretty">
           {checkoutUrl
@@ -338,7 +338,7 @@ function Accepted({
       )}
 
       <p className="text-caption text-muted-foreground text-pretty">
-        Puedes volver a este enlace para completar el pago cuando quieras.
+        Podés volver a este enlace para completar el pago cuando quieras.
       </p>
     </div>
   )
@@ -350,7 +350,7 @@ function Rejected({ trainerName }: { trainerName: string }) {
       <ThumbsDown className="size-10 text-muted-foreground" />
       <div>
         <h1 className="text-title font-semibold tracking-tight text-balance">
-          Has rechazado la propuesta
+          Rechazaste la propuesta
         </h1>
         <p className="mt-2 max-w-prose text-body text-muted-foreground text-pretty">
           Hemos avisado a {trainerName}. Si cambias de idea, pídele que te la vuelva a enviar.
@@ -385,7 +385,7 @@ function AlreadyAnswered({ invitation }: { invitation: PlanInvitation }) {
   const copy: Record<string, string> = {
     REJECTED: "Ya rechazaste esta invitación.",
     CANCELLED: `${invitation.trainer.name} ha retirado esta propuesta.`,
-    EXPIRED: "Esta invitación ha caducado. Pide a tu entrenador que te la envíe de nuevo.",
+    EXPIRED: "Esta invitación venció. Pedile a tu entrenador que te la mande de nuevo.",
   }
 
   return (

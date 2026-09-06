@@ -1,6 +1,6 @@
 "use client"
 
-import { Check, PackageCheck, X } from "lucide-react"
+import { Check, Loader2, PackageCheck, X } from "lucide-react"
 import Image from "next/image"
 import { useState } from "react"
 
@@ -18,6 +18,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Skeleton } from "@/components/ui/skeleton"
+import { formatDate } from "@/lib/format"
 
 import type { RedemptionStatus } from "../dto/brand.dto"
 import { useBrandRedemptions, useChangeRedemptionStatus } from "../hooks/use-brand"
@@ -44,6 +45,15 @@ export function BrandRedemptionsScreen() {
 
   const query = useBrandRedemptions(filter)
   const changeStatus = useChangeRedemptionStatus()
+
+  /**
+   * Which row the mutation belongs to.
+   *
+   * `isPending` is one flag shared by the whole list, so using it directly
+   * froze every button on every canje while one of them ran. `variables`
+   * carries the id in flight, so the freeze and the spinner stay on that row.
+   */
+  const isActing = (id: number) => changeStatus.isPending && changeStatus.variables?.id === id
 
   return (
     <div className="flex flex-col gap-5">
@@ -98,8 +108,8 @@ export function BrandRedemptionsScreen() {
               <div className="min-w-40 flex-1">
                 <p className="font-medium">{redemption.productName}</p>
                 <p className="text-caption text-muted-foreground tabular-nums">
-                  {formatDate(redemption.createdAt)} · {redemption.totalCostDumbbells}{" "}
-                  {redemption.totalCostDumbbells === 1 ? "mancuerna" : "mancuernas"}
+                  {formatDate(redemption.createdAt)} · {redemption.totalCostReps}{" "}
+                  {redemption.totalCostReps === 1 ? "repe" : "repes"}
                 </p>
                 {/* La nota de entrega es lo único que el alumno escribe: talle,
                     color, cuándo pasa. Va visible y no detrás de un detalle. */}
@@ -123,20 +133,20 @@ export function BrandRedemptionsScreen() {
                 {redemption.status === "PENDING" && (
                   <Button
                     size="sm"
-                    disabled={changeStatus.isPending}
+                    disabled={isActing(redemption.id)}
                     onClick={() => changeStatus.mutate({ id: redemption.id, status: "READY" })}
                   >
-                    <Check />
+                    {isActing(redemption.id) ? <Loader2 className="animate-spin" /> : <Check />}
                     Listo para retirar
                   </Button>
                 )}
                 {redemption.status === "READY" && (
                   <Button
                     size="sm"
-                    disabled={changeStatus.isPending}
+                    disabled={isActing(redemption.id)}
                     onClick={() => changeStatus.mutate({ id: redemption.id, status: "DELIVERED" })}
                   >
-                    <Check />
+                    {isActing(redemption.id) ? <Loader2 className="animate-spin" /> : <Check />}
                     Entregado
                   </Button>
                 )}
@@ -144,7 +154,7 @@ export function BrandRedemptionsScreen() {
                   <Button
                     variant="outline"
                     size="sm"
-                    disabled={changeStatus.isPending}
+                    disabled={isActing(redemption.id)}
                     onClick={() => setCancelling(redemption)}
                   >
                     <X />
@@ -198,8 +208,8 @@ function CancelDialog({
         <DialogHeader>
           <DialogTitle>Cancelar canje</DialogTitle>
           <DialogDescription>
-            Le devolvemos {redemption?.totalCostDumbbells ?? 0}{" "}
-            {redemption?.totalCostDumbbells === 1 ? "mancuerna" : "mancuernas"} al alumno y el stock
+            Le devolvemos {redemption?.totalCostReps ?? 0}{" "}
+            {redemption?.totalCostReps === 1 ? "repe" : "repes"} al alumno y el stock
             vuelve a tu producto. El motivo le llega a él.
           </DialogDescription>
         </DialogHeader>
@@ -211,19 +221,23 @@ function CancelDialog({
             value={reason}
             onChange={(event) => setReason(event.target.value)}
             placeholder="Nos quedamos sin stock del talle"
-            maxLength={200}
+            maxLength={REASON_MAX_LENGTH}
           />
+          <p className="text-caption text-muted-foreground">
+            {reason.length}/{REASON_MAX_LENGTH}
+          </p>
         </div>
 
         <DialogFooter>
           <Button variant="ghost" onClick={onClose} disabled={changeStatus.isPending}>
-            Volver
+            Cancelar
           </Button>
           <Button
             variant="destructive"
             onClick={confirm}
             disabled={changeStatus.isPending || !reason.trim()}
           >
+            {changeStatus.isPending && <Loader2 className="size-4 animate-spin" />}
             Cancelar el canje
           </Button>
         </DialogFooter>
@@ -232,8 +246,5 @@ function CancelDialog({
   )
 }
 
-function formatDate(iso: string): string {
-  const date = new Date(iso)
-  if (Number.isNaN(date.getTime())) return ""
-  return date.toLocaleDateString("es-AR", { day: "2-digit", month: "2-digit", year: "numeric" })
-}
+/** Igual que el `@Size` del backend, para que el corte no llegue como un 400. */
+const REASON_MAX_LENGTH = 200

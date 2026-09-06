@@ -37,7 +37,7 @@ function renderInput(value: string[] = []) {
     </QueryClientProvider>,
   )
 
-  return { onChange, field: screen.getByLabelText("Añadir especialidad") }
+  return { onChange, field: screen.getByLabelText("Agregar especialidad") }
 }
 
 function type(field: HTMLElement, text: string) {
@@ -109,8 +109,8 @@ describe("SpecialtyTagsInput", () => {
       </QueryClientProvider>,
     )
 
-    expect(screen.getByLabelText("Añadir especialidad")).toBeDisabled()
-    expect(screen.getByText("Has alcanzado el máximo de 3 especialidades.")).toBeInTheDocument()
+    expect(screen.getByLabelText("Agregar especialidad")).toBeDisabled()
+    expect(screen.getByText("Llegaste al máximo de 3 especialidades.")).toBeInTheDocument()
   })
 
   it("offers the catalogue as suggestions without requiring them", async () => {

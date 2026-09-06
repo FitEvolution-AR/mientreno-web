@@ -120,8 +120,8 @@ export function FoodDetailSheet({ foodId, onOpenChange, onPick }: FoodDetailShee
                           value={unit}
                           onChange={(event) => setUnit(event.target.value)}
                           className={cn(
-                            "h-9 rounded-lg border border-input bg-transparent px-2 text-body",
-                            "focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none",
+                            "h-9 rounded-lg border border-border-dark bg-transparent px-2 text-body",
+                            "focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
                           )}
                         >
                           {UNITS.map((option) => (
@@ -155,7 +155,7 @@ export function FoodDetailSheet({ foodId, onOpenChange, onPick }: FoodDetailShee
           <SheetFooter>
             <Button onClick={add}>
               <Plus className="size-4" />
-              Añadir a la comida
+              Agregar a la comida
             </Button>
           </SheetFooter>
         )}

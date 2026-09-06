@@ -82,7 +82,7 @@ export function useSendInvitation() {
     },
 
     onError: (error) =>
-      toast.error(errorMessage(error, "No se ha podido enviar la invitación")),
+      toast.error(errorMessage(error, "No pudimos enviar la invitación")),
   })
 }
 
@@ -98,7 +98,7 @@ export function useCancelInvitation() {
       toast.success("Invitación cancelada")
     },
     onError: (error) =>
-      toast.error(errorMessage(error, "No se ha podido cancelar la invitación")),
+      toast.error(errorMessage(error, "No pudimos cancelar la invitación")),
   })
 }
 
@@ -112,6 +112,6 @@ export function useResendInvitation() {
       toast.success("Invitación reenviada")
     },
     onError: (error) =>
-      toast.error(errorMessage(error, "No se ha podido reenviar la invitación")),
+      toast.error(errorMessage(error, "No pudimos reenviar la invitación")),
   })
 }

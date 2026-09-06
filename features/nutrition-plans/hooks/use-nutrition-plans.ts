@@ -56,7 +56,7 @@ export function usePublishNutritionPlan(subscriptionId: number) {
       // NutritionPlanService.create sends no notification.
       toast.success(`Versión ${plan.version} publicada`)
     },
-    onError: (error) => toast.error(errorMessage(error, "No se ha podido publicar el plan")),
+    onError: (error) => toast.error(errorMessage(error, "No pudimos publicar el plan")),
   })
 }
 
@@ -83,6 +83,6 @@ export function useDeleteNutritionPlanVersion() {
       queryClient.invalidateQueries({ queryKey: qk.nutritionPlans.all })
       toast.success("Versión eliminada")
     },
-    onError: (error) => toast.error(errorMessage(error, "No se ha podido eliminar la versión")),
+    onError: (error) => toast.error(errorMessage(error, "No pudimos eliminar la versión")),
   })
 }

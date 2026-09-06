@@ -60,7 +60,7 @@ export function FoodList({
       <EmptyState
         icon={SearchX}
         title="Ningún alimento coincide"
-        description="Prueba con otro nombre o marca."
+        description="Probá con otro nombre o marca."
       />
     )
   }

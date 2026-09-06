@@ -75,15 +75,15 @@ export function TrainerProfileForm({
 
     if (values.basePrice.trim()) {
       const price = Number(values.basePrice.replace(",", "."))
-      if (!Number.isFinite(price)) found.basePrice = "Introduce un número válido"
+      if (!Number.isFinite(price)) found.basePrice = "Ingresá un número válido"
       else if (price < 0) found.basePrice = "La tarifa no puede ser negativa"
     }
 
     if (values.experienceYears.trim()) {
       const years = Number(values.experienceYears)
-      if (!Number.isInteger(years)) found.experienceYears = "Introduce un número entero de años"
+      if (!Number.isInteger(years)) found.experienceYears = "Ingresá un número entero de años"
       else if (years < 0) found.experienceYears = "Los años no pueden ser negativos"
-      else if (years > 80) found.experienceYears = "Introduce un valor realista"
+      else if (years > 80) found.experienceYears = "Ingresá un valor realista"
     }
 
     // `name` is the only @NotBlank field on CertificationRequestDTO. A row with
@@ -276,7 +276,7 @@ export function TrainerProfileForm({
         <div>
           <h2 className="font-heading text-subtitle font-semibold tracking-tight">Especialidades</h2>
           <p className="mt-1 text-body text-muted-foreground">
-            Escribe las que quieras: los alumnos filtran por estas etiquetas al buscar entrenador.
+            Escribí las que quieras: los alumnos filtran por estas etiquetas al buscar entrenador.
           </p>
         </div>
         <SpecialtyTagsInput
@@ -294,7 +294,7 @@ export function TrainerProfileForm({
             Certificaciones
           </h2>
           <p className="mt-1 text-body text-muted-foreground">
-            Añade titulaciones que respalden tu experiencia.
+            Agregá titulaciones que respalden tu experiencia.
           </p>
         </div>
         <CertificationListEditor

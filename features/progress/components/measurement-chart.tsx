@@ -92,10 +92,10 @@ export function MeasurementChart({ points, measure }: MeasurementChartProps) {
         <svg
           ref={svgRef}
           viewBox={`0 0 ${VIEW_W} ${VIEW_H}`}
-          className="w-full touch-none rounded-xl border border-border bg-card focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
+          className="w-full touch-none rounded-xl border border-border bg-card focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
           role="img"
           tabIndex={0}
-          aria-label={`Evolución de ${measure.label} en ${measure.unit}. Usa las flechas para recorrer los puntos.`}
+          aria-label={`Evolución de ${measure.label} en ${measure.unit}. Usá las flechas para recorrer los puntos.`}
           onPointerMove={handlePointer}
           onPointerLeave={() => setActiveIndex(null)}
           onKeyDown={handleKey}
@@ -118,7 +118,7 @@ export function MeasurementChart({ points, measure }: MeasurementChartProps) {
                 textAnchor="end"
                 dominantBaseline="middle"
                 className="fill-muted-foreground"
-                fontSize={11}
+                fontSize={12}
               >
                 {tick}
               </text>
@@ -176,7 +176,7 @@ export function MeasurementChart({ points, measure }: MeasurementChartProps) {
             x={PAD.left}
             y={VIEW_H - 8}
             className="fill-muted-foreground"
-            fontSize={11}
+            fontSize={12}
           >
             {formatDate(points[0].recordedAt)}
           </text>
@@ -186,7 +186,7 @@ export function MeasurementChart({ points, measure }: MeasurementChartProps) {
               y={VIEW_H - 8}
               textAnchor="end"
               className="fill-muted-foreground"
-              fontSize={11}
+              fontSize={12}
             >
               {formatDate(points[points.length - 1].recordedAt)}
             </text>

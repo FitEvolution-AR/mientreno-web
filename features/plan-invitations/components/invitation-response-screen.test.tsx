@@ -91,7 +91,7 @@ describe("InvitationResponseScreen", () => {
 
     fireEvent.click(await screen.findByRole("button", { name: /Aceptar plan/ }))
 
-    expect(await screen.findByText("Has aceptado la propuesta")).toBeInTheDocument()
+    expect(await screen.findByText("Aceptaste la propuesta")).toBeInTheDocument()
     expect(screen.queryByText(/Ya eres alumno/)).not.toBeInTheDocument()
   })
 
@@ -139,7 +139,7 @@ describe("InvitationResponseScreen", () => {
     }
     renderScreen()
 
-    expect(await screen.findByText("Has aceptado la propuesta")).toBeInTheDocument()
+    expect(await screen.findByText("Aceptaste la propuesta")).toBeInTheDocument()
     expect(screen.getByRole("link", { name: /Pagar con Mercado Pago/ })).toHaveAttribute(
       "href",
       "https://mp/checkout",

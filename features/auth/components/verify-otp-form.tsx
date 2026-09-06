@@ -68,14 +68,14 @@ export function VerifyOtpForm() {
 
   function handleResend() {
     if (!email.trim()) {
-      toast.error("Introduce tu correo para reenviar el código")
+      toast.error("Ingresá tu correo para reenviar el código")
       return
     }
 
     resend.mutate(email, {
       onSuccess: () => {
         cooldown.start()
-        toast.success("Te hemos enviado un código nuevo")
+        toast.success("Te enviamos un código nuevo")
       },
       onError: (error) => {
         if (error instanceof ApiError && error.status === 429) {
@@ -100,8 +100,8 @@ export function VerifyOtpForm() {
 
   return (
     <AuthShell
-      title="Verifica tu correo"
-      description={`Introduce el código de ${OTP_LENGTH} dígitos que te hemos enviado. Caduca en ${OTP_EXPIRY_MINUTES} minutos.`}
+      title="Verificá tu correo"
+      description={`Ingresá el código de ${OTP_LENGTH} dígitos que te enviamos. Vence en ${OTP_EXPIRY_MINUTES} minutos.`}
       footer={
         <Link
           href="/login"

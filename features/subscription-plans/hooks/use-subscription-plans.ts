@@ -35,7 +35,7 @@ export function useCreatePlan() {
       queryClient.invalidateQueries({ queryKey: qk.subscriptionPlans.all })
       toast.success("Plan creado")
     },
-    onError: (error) => toast.error(errorMessage(error, "No se ha podido crear el plan")),
+    onError: (error) => toast.error(errorMessage(error, "No pudimos crear el plan")),
   })
 }
 
@@ -49,7 +49,7 @@ export function useUpdatePlan() {
       queryClient.invalidateQueries({ queryKey: qk.subscriptionPlans.all })
       toast.success("Plan actualizado")
     },
-    onError: (error) => toast.error(errorMessage(error, "No se ha podido actualizar el plan")),
+    onError: (error) => toast.error(errorMessage(error, "No pudimos actualizar el plan")),
   })
 }
 
@@ -63,6 +63,6 @@ export function useDeactivatePlan() {
       queryClient.invalidateQueries({ queryKey: qk.subscriptionPlans.all })
       toast.success("Plan desactivado. Los alumnos suscritos no se ven afectados.")
     },
-    onError: (error) => toast.error(errorMessage(error, "No se ha podido desactivar el plan")),
+    onError: (error) => toast.error(errorMessage(error, "No pudimos desactivar el plan")),
   })
 }

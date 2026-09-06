@@ -54,7 +54,7 @@ export function ExerciseVideosSheet({ exerciseId, onOpenChange }: ExerciseVideos
           <SheetDescription>
             {detail.data
               ? `${detail.data.dayLabel || `Día ${detail.data.dayNumber}`} · ${detail.data.planTitle}`
-              : "Vídeos de demostración."}
+              : "Videos de demostración."}
           </SheetDescription>
         </SheetHeader>
 
@@ -109,16 +109,16 @@ export function ExerciseVideosSheet({ exerciseId, onOpenChange }: ExerciseVideos
               <section className="flex flex-col gap-4">
                 <h3 className="flex items-center gap-2 font-medium">
                   <Film className="size-4" />
-                  Vídeos
+                  Videos
                 </h3>
 
                 {exerciseId !== null && <VideoUploader exerciseId={exerciseId} />}
 
                 {videos.isLoading ? (
-                  <p className="text-body text-muted-foreground">Cargando vídeos…</p>
+                  <p className="text-body text-muted-foreground">Cargando videos…</p>
                 ) : list.length === 0 ? (
                   <p className="rounded-lg border border-dashed border-border p-4 text-body text-muted-foreground">
-                    Este ejercicio aún no tiene vídeos.
+                    Este ejercicio aún no tiene videos.
                   </p>
                 ) : (
                   <ul className="flex flex-col gap-3">
@@ -173,11 +173,11 @@ export function ExerciseVideosSheet({ exerciseId, onOpenChange }: ExerciseVideos
         <ConfirmDialog
           open={pendingDelete !== null}
           onOpenChange={(open) => !open && setPendingDelete(null)}
-          title="¿Eliminar este vídeo?"
+          title="¿Eliminar este video?"
           description={
             pendingDelete?.id === activeVideoId
-              ? "Es el vídeo que ve el alumno en este ejercicio. Al eliminarlo, el ejercicio se queda sin vídeo asociado."
-              : "Se eliminará del historial del ejercicio. El vídeo visible para el alumno no cambia."
+              ? "Es el video que ve el alumno en este ejercicio. Al eliminarlo, el ejercicio se queda sin video asociado."
+              : "Se eliminará del historial del ejercicio. El video visible para el alumno no cambia."
           }
           confirmLabel="Eliminar"
           destructive

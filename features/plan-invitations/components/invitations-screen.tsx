@@ -145,7 +145,17 @@ function InvitationList({ status }: { status: InvitationStatus | null }) {
           <InvitationRow
             key={invitation.id}
             invitation={invitation}
-            busy={cancel.isPending || resend.isPending}
+            /*
+             * Per row, not per screen.
+             *
+             * `isPending` alone is a single flag shared by every row, so one
+             * click used to freeze Reenviar and Cancelar on the whole list with
+             * nothing saying which invitation was working. `variables` carries
+             * the id of the call in flight — the same fix `students-screen`
+             * already applies to Pausar/Reanudar.
+             */
+            cancelling={cancel.isPending && cancel.variables === invitation.id}
+            resending={resend.isPending && resend.variables === invitation.id}
             onCancel={() => setPendingCancel(invitation)}
             onResend={() => resend.mutate(invitation.id)}
           />
@@ -183,16 +193,19 @@ function InvitationList({ status }: { status: InvitationStatus | null }) {
 
 function InvitationRow({
   invitation,
-  busy,
+  cancelling,
+  resending,
   onCancel,
   onResend,
 }: {
   invitation: PlanInvitation
-  busy: boolean
+  cancelling: boolean
+  resending: boolean
   onCancel: () => void
   onResend: () => void
 }) {
   const daysLeft = daysUntilExpiry(invitation)
+  const busy = cancelling || resending
 
   return (
     <li className="flex flex-col gap-3 rounded-xl border border-border bg-card p-4">
@@ -213,8 +226,8 @@ function InvitationRow({
             Enviada el {formatDate(invitation.createdAt)}
             {daysLeft !== null &&
               (daysLeft === 0
-                ? " · caduca hoy"
-                : ` · caduca en ${daysLeft} ${daysLeft === 1 ? "día" : "días"}`)}
+                ? " · vence hoy"
+                : ` · vence en ${daysLeft} ${daysLeft === 1 ? "día" : "días"}`)}
             {invitation.respondedAt &&
               ` · respondida el ${formatDate(invitation.respondedAt)}`}
           </p>
@@ -252,7 +265,13 @@ function InvitationRow({
 
         {canResend(invitation.status) && (
           <Button variant="outline" size="sm" disabled={busy} onClick={onResend}>
-            <RotateCcw className="size-4" />
+            {/* Reenviar no pasa por un diálogo, así que este spinner es su
+                único acuse de recibo hasta que llega el toast. */}
+            {resending ? (
+              <Loader2 className="size-4 animate-spin" />
+            ) : (
+              <RotateCcw className="size-4" />
+            )}
             Reenviar
           </Button>
         )}
@@ -265,7 +284,11 @@ function InvitationRow({
             disabled={busy}
             onClick={onCancel}
           >
-            <Trash2 className="size-4" />
+            {cancelling ? (
+              <Loader2 className="size-4 animate-spin" />
+            ) : (
+              <Trash2 className="size-4" />
+            )}
             Cancelar
           </Button>
         )}

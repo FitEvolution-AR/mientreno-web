@@ -61,6 +61,13 @@ export function DashboardHeader({ initialName }: { initialName?: string | null }
             way into the profile, settings and logout. */}
         <DropdownMenu>
           <DropdownMenuTrigger
+            /*
+             * El nombre va en `aria-label` y no lo aporta el contenido: el
+             * `<span>` con el nombre es `hidden sm:inline`, así que por debajo
+             * de 640px este botón se quedaba sin nombre accesible ninguno —
+             * y es la única entrada a perfil, ajustes y cerrar sesión en móvil.
+             */
+            aria-label={name ? `Mi cuenta, ${name}` : "Mi cuenta"}
             render={<Button variant="ghost" className="flex items-center gap-2 px-2 md:hidden" />}
           >
             {/* `avatarUrl` is already routed through the authenticated media

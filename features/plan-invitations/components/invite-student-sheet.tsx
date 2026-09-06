@@ -299,7 +299,7 @@ function ReviewStep({
         <p className="flex items-start gap-2 rounded-lg border border-warning bg-warning-surface p-3 text-body text-warning-text">
           <AlertTriangle className="mt-0.5 size-4 shrink-0" />
           <span className="text-pretty">
-            Aún no has vinculado tu cuenta de Mercado Pago, así que el alumno no podrá pagar este
+            Todavía no vinculaste tu cuenta de Mercado Pago, así que el alumno no podrá pagar este
             plan al aceptarlo.{" "}
             <Link href="/dashboard/payments" className="font-medium underline underline-offset-4">
               Vincular ahora
@@ -316,7 +316,7 @@ function ReviewStep({
           value={message}
           disabled={disabled}
           maxLength={MAX_MESSAGE_LENGTH}
-          placeholder="Hola, te dejo el plan del que hablamos. Cualquier duda, escríbeme."
+          placeholder="Hola, te dejo el plan del que hablamos. Cualquier duda, escribime."
           onChange={(event) => onMessageChange(event.target.value)}
         />
         <p className="text-caption text-muted-foreground">

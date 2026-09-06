@@ -38,7 +38,7 @@ export function TrainerNutritionScreen() {
     return (
       <EmptyState
         icon={Users}
-        title="Aún no tienes alumnos activos"
+        title="Todavía no tenés alumnos activos"
         description="Cuando un alumno se suscriba podrás asignarle un plan nutricional."
       />
     )
@@ -90,7 +90,7 @@ function NutritionRow({ row }: { row: StudentNutritionSummary }) {
     <li>
       <Link
         href={`/dashboard/students/${row.subscriptionId}?tab=nutrition`}
-        className="flex items-center gap-4 rounded-xl border border-border bg-card p-4 transition-colors hover:border-input focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
+        className="flex items-center gap-4 rounded-xl border border-border bg-card p-4 transition-colors hover:border-border-dark focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
       >
         <UserAvatar name={row.studentName} src={row.studentAvatarUrl} className="size-10" />
 

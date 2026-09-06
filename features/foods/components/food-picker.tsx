@@ -64,7 +64,7 @@ export function FoodPicker({ open, onOpenChange, onPick }: FoodPickerProps) {
       <Sheet open={open} onOpenChange={onOpenChange}>
         <SheetContent side="right" className="w-full sm:max-w-2xl">
           <SheetHeader>
-            <SheetTitle>Añadir alimento</SheetTitle>
+            <SheetTitle>Agregar alimento</SheetTitle>
             <SheetDescription>
               Elígelo del catálogo para calcular los macros automáticamente, o escríbelo a mano.
             </SheetDescription>
@@ -130,7 +130,7 @@ export function FoodPicker({ open, onOpenChange, onPick }: FoodPickerProps) {
                   />
                 </div>
                 <Button type="button" variant="outline" disabled={!customName.trim()} onClick={addCustom}>
-                  Añadir
+                  Agregar
                 </Button>
               </div>
             </section>

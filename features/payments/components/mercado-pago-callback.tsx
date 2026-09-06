@@ -39,11 +39,11 @@ export function MercadoPagoCallback() {
     return (
       <CallbackState
         tone="error"
-        title="No se ha completado la vinculación"
+        title="No pudimos completar la vinculación"
         description={
           error === "access_denied"
-            ? "Has cancelado la autorización en Mercado Pago. Tu cuenta sigue sin vincular."
-            : `Mercado Pago ha devuelto un error: ${error}`
+            ? "Cancelaste la autorización en Mercado Pago. Tu cuenta sigue sin vincular."
+            : `Mercado Pago devolvió un error: ${error}`
         }
       />
     )
@@ -54,7 +54,7 @@ export function MercadoPagoCallback() {
       <CallbackState
         tone="error"
         title="Enlace de vuelta incompleto"
-        description="Faltan los parámetros que devuelve Mercado Pago. Vuelve a intentar la vinculación desde la pantalla de cobros."
+        description="Faltan los parámetros que devuelve Mercado Pago. Volvé a intentar la vinculación desde la pantalla de cobros."
       />
     )
   }
@@ -73,11 +73,11 @@ export function MercadoPagoCallback() {
     return (
       <CallbackState
         tone="error"
-        title="No hemos podido guardar la vinculación"
+        title="No pudimos guardar la vinculación"
         description={
           complete.error instanceof ApiError
             ? complete.error.message
-            : "Inténtalo de nuevo desde la pantalla de cobros."
+            : "Volvé a intentarlo desde la pantalla de cobros."
         }
       />
     )
@@ -90,7 +90,7 @@ export function MercadoPagoCallback() {
       description={
         complete.data?.nickname
           ? `Los cobros de tus planes se acreditarán en ${complete.data.nickname}.`
-          : "Ya puedes cobrar las suscripciones de tus alumnos."
+          : "Ya podés cobrar las suscripciones de tus alumnos."
       }
     />
   )

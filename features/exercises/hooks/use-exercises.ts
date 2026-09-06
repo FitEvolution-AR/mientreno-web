@@ -56,7 +56,7 @@ export function useUploadExerciseVideo(exerciseId: number) {
       queryClient.invalidateQueries({ queryKey: qk.trainingPlans.all })
       toast.success("Vídeo subido")
     },
-    onError: (error) => toast.error(errorMessage(error, "No se ha podido subir el vídeo")),
+    onError: (error) => toast.error(errorMessage(error, "No pudimos subir el video")),
     onSettled: () => setProgress(0),
   })
 
@@ -75,6 +75,6 @@ export function useDeleteExerciseVideo(exerciseId: number) {
       queryClient.invalidateQueries({ queryKey: qk.trainingPlans.all })
       toast.success("Vídeo eliminado")
     },
-    onError: (error) => toast.error(errorMessage(error, "No se ha podido eliminar el vídeo")),
+    onError: (error) => toast.error(errorMessage(error, "No pudimos eliminar el video")),
   })
 }

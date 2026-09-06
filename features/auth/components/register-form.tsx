@@ -159,7 +159,7 @@ export function RegisterForm({ audience: audienceId = "trainer" }: { audience?: 
           render={({ field: { value, onChange } }) => (
             <PasswordField
               id="confirmPassword"
-              label="Repite la contraseña"
+              label="Repetí la contraseña"
               value={value}
               onChange={onChange}
               error={errors.confirmPassword?.message}

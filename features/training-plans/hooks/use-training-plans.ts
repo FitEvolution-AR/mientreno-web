@@ -60,7 +60,7 @@ export function usePublishTrainingPlan(subscriptionId: number) {
       queryClient.invalidateQueries({ queryKey: qk.trainingPlans.all })
       toast.success(`Versión ${plan.version} publicada. El alumno ha sido notificado.`)
     },
-    onError: (error) => toast.error(errorMessage(error, "No se ha podido publicar el plan")),
+    onError: (error) => toast.error(errorMessage(error, "No pudimos publicar el plan")),
   })
 }
 
@@ -89,6 +89,6 @@ export function useDeleteTrainingPlanVersion() {
       queryClient.invalidateQueries({ queryKey: qk.trainingPlans.all })
       toast.success("Versión eliminada")
     },
-    onError: (error) => toast.error(errorMessage(error, "No se ha podido eliminar la versión")),
+    onError: (error) => toast.error(errorMessage(error, "No pudimos eliminar la versión")),
   })
 }

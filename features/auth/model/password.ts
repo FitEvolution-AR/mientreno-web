@@ -28,13 +28,13 @@ export const passwordSchema = z
 export const emailSchema = z
   .string()
   .min(1, "El correo es obligatorio")
-  .email("Introduce un correo válido")
+  .email("Ingresá un correo válido")
 
 /** `^\+?[0-9]{7,15}$` upstream, and optional — blank is allowed. */
 export const phoneSchema = z
   .string()
   .refine((value) => value.trim() === "" || /^\+?[0-9]{7,15}$/.test(value.trim()), {
-    message: "Introduce un teléfono válido (7 a 15 dígitos)",
+    message: "Ingresá un teléfono válido (7 a 15 dígitos)",
   })
 
 export const otpSchema = z

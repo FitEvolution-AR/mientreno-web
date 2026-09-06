@@ -1,6 +1,6 @@
 "use client"
 
-import { ArrowRight, Check } from "lucide-react"
+import { ArrowRight, Check, Loader2 } from "lucide-react"
 import Link from "next/link"
 
 import { Badge } from "@/components/ui/badge"
@@ -96,7 +96,7 @@ export function NotificationItem({
           aria-label={`Marcar "${notification.title}" como leída`}
           onClick={() => onMarkRead(notification.id)}
         >
-          <Check className="size-4" />
+          {isPending ? <Loader2 className="size-4 animate-spin" /> : <Check className="size-4" />}
         </Button>
       )}
     </li>

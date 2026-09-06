@@ -90,7 +90,7 @@ export function BrandProductsScreen() {
         />
       ) : (
         <div className="overflow-x-auto rounded-xl border border-border">
-          <Table>
+          <Table label="Productos del comercio">
             <TableHeader>
               <TableRow>
                 <TableHead>Producto</TableHead>
@@ -176,13 +176,18 @@ function ProductRow({ product, onEdit }: { product: BrandProduct; onEdit: () => 
         </StatusPill>
       </TableCell>
 
-      <TableCell className="text-right tabular-nums">{product.costDumbbells}</TableCell>
+      <TableCell className="text-right tabular-nums">{product.costReps}</TableCell>
 
       <TableCell className="text-right">
-        <div className="flex items-center justify-end gap-1">
+        {/*
+          `icon-xs` son 24x24 pegados de a dos: el piso exacto del 2.5.8 de
+          WCAG 2.2, y es la única fila del panel que se toca con el dedo desde
+          el móvil. 32px con 8px de separación deja de ser un blanco al límite.
+        */}
+        <div className="flex items-center justify-end gap-2">
           <Button
             variant="ghost"
-            size="icon-xs"
+            size="icon"
             aria-label={`Restar una unidad de ${product.name}`}
             disabled={adjustStock.isPending || product.stock <= 0}
             onClick={() => adjustStock.mutate({ id: product.id, delta: -1 })}
@@ -192,7 +197,7 @@ function ProductRow({ product, onEdit }: { product: BrandProduct; onEdit: () => 
           <span className="min-w-6 text-center tabular-nums">{product.stock}</span>
           <Button
             variant="ghost"
-            size="icon-xs"
+            size="icon"
             aria-label={`Sumar una unidad de ${product.name}`}
             disabled={adjustStock.isPending}
             onClick={() => adjustStock.mutate({ id: product.id, delta: 1 })}

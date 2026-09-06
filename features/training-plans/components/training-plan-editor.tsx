@@ -1,14 +1,17 @@
 "use client"
 
 import { AlertTriangle, Loader2, Plus, Save, Upload } from "lucide-react"
-import { useState } from "react"
+import { useMemo, useState } from "react"
 
+import { ConfirmDialog } from "@/components/dashboard/confirm-dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { ApiError } from "@/core/http/errors"
+import { useUnsavedChanges } from "@/core/hooks/use-unsaved-changes"
+import { ApiError, unclaimedFieldErrors } from "@/core/http/errors"
 import {
+  cloneDay,
   countExercises,
   emptyDay,
   type EditorDay,
@@ -29,6 +32,9 @@ interface TrainingPlanEditorProps {
   onCancel?: () => void
 }
 
+/** The keys this form renders itself; anything else the backend sends is spare. */
+const CLAIMED_FIELDS = ["title", "notes", "days", "exercises"] as const
+
 /**
  * The plan editor.
  *
@@ -43,6 +49,14 @@ interface TrainingPlanEditorProps {
  *
  * The Swagger annotations describe these the other way round; the code is the
  * authority (see `training-plans.repository.ts`).
+ *
+ * ## The draft lives only here
+ *
+ * There is no autosave and no server-side draft: a whole routine sits in React
+ * state until one of those two buttons is pressed. So every exit is guarded —
+ * `useUnsavedChanges` for the ones the browser owns (reload, closed tab) and a
+ * confirmation for the ones this form owns (Cancelar, removing a day that has
+ * exercises in it).
  */
 export function TrainingPlanEditor({
   value,
@@ -56,9 +70,26 @@ export function TrainingPlanEditor({
   onCancel,
 }: TrainingPlanEditorProps) {
   const [errors, setErrors] = useState<Record<string, string>>({})
+  /** Per-exercise messages, keyed by `EditorExercise.key`. */
+  const [exerciseErrors, setExerciseErrors] = useState<Record<string, string>>({})
+  const [confirmingCancel, setConfirmingCancel] = useState(false)
 
   const serverErrors = error instanceof ApiError ? error.fieldErrors : {}
   const allErrors = { ...serverErrors, ...errors }
+
+  /*
+   * Bean validation keys a nested list by its path — `days[0].exercises[1].name`
+   * — so looking up only the four names above threw those messages away and a
+   * 400 left the form silent. Whatever no field claimed gets printed verbatim.
+   */
+  const spareServerErrors = unclaimedFieldErrors(serverErrors, CLAIMED_FIELDS)
+
+  // Snapshot of the draft as it was opened. Lazy initial state rather than a
+  // ref: the component is not remounted while editing, so the first render's
+  // value is the baseline, and a ref would be read during render.
+  const [baseline] = useState(() => JSON.stringify(value))
+  const isDirty = useMemo(() => baseline !== JSON.stringify(value), [baseline, value])
+  useUnsavedChanges(isDirty && !isPending)
 
   const totalExercises = countExercises(value)
   const emptyTrainingDays = value.days.filter(
@@ -81,24 +112,42 @@ export function TrainingPlanEditor({
     onChange({ ...value, days })
   }
 
+  /** Inserted right after the original, which is where the trainer is looking. */
+  function duplicateDay(index: number) {
+    const days = [...value.days]
+    days.splice(index + 1, 0, cloneDay(value.days[index]))
+    onChange({ ...value, days })
+  }
+
   function validate(): boolean {
     const found: Record<string, string> = {}
+    const perExercise: Record<string, string> = {}
 
     if (!value.title.trim()) found.title = "El título es obligatorio"
     if (value.days.length === 0) found.days = "El plan necesita al menos un día"
 
     // Mirrors `resolveExerciseName`, which throws 400 unless an exercise has a
-    // name or a catalogue id.
-    const nameless = value.days.some(
-      (day) =>
-        !day.restDay &&
-        day.exercises.some(
-          (exercise) => !exercise.name.trim() && exercise.catalogExerciseId === null,
-        ),
-    )
-    if (nameless) found.exercises = "Cada ejercicio necesita un nombre"
+    // name or a catalogue id. Anchored to the row so the trainer does not have
+    // to hunt for which of thirty exercises is the nameless one.
+    for (const day of value.days) {
+      if (day.restDay) continue
+      for (const exercise of day.exercises) {
+        if (!exercise.name.trim() && exercise.catalogExerciseId === null) {
+          perExercise[exercise.key] = "Este ejercicio necesita un nombre"
+        }
+      }
+    }
+
+    const nameless = Object.keys(perExercise).length
+    if (nameless > 0) {
+      found.exercises =
+        nameless === 1
+          ? "Hay un ejercicio sin nombre, marcado abajo."
+          : `Hay ${nameless} ejercicios sin nombre, marcados abajo.`
+    }
 
     setErrors(found)
+    setExerciseErrors(perExercise)
     return Object.keys(found).length === 0
   }
 
@@ -109,6 +158,15 @@ export function TrainingPlanEditor({
       if (!validate()) return
       action()
     }
+  }
+
+  function handleCancel() {
+    if (!onCancel) return
+    if (isDirty) {
+      setConfirmingCancel(true)
+      return
+    }
+    onCancel()
   }
 
   return (
@@ -122,6 +180,7 @@ export function TrainingPlanEditor({
             id="plan-title"
             value={value.title}
             disabled={isPending}
+            aria-invalid={allErrors.title ? true : undefined}
             placeholder="Fuerza · Torso-pierna"
             onChange={(event) => onChange({ ...value, title: event.target.value })}
           />
@@ -155,12 +214,22 @@ export function TrainingPlanEditor({
             onClick={() => onChange({ ...value, days: [...value.days, emptyDay(value.days.length)] })}
           >
             <Plus className="size-4" />
-            Añadir día
+            Agregar día
           </Button>
         </div>
 
         {allErrors.days && <p className="text-body text-error-text">{allErrors.days}</p>}
         {allErrors.exercises && <p className="text-body text-error-text">{allErrors.exercises}</p>}
+
+        {spareServerErrors.length > 0 && (
+          <ul className="flex flex-col gap-1 rounded-lg border border-error/40 bg-error-surface p-3 text-body text-error-text">
+            {spareServerErrors.map((message) => (
+              <li key={message} className="text-pretty">
+                {message}
+              </li>
+            ))}
+          </ul>
+        )}
 
         <ul className="flex flex-col gap-4">
           {value.days.map((day, index) => (
@@ -170,10 +239,12 @@ export function TrainingPlanEditor({
               index={index}
               total={value.days.length}
               disabled={isPending}
+              exerciseErrors={exerciseErrors}
               onChange={(patch) => patchDay(index, patch)}
               onRemove={() =>
                 onChange({ ...value, days: value.days.filter((_, i) => i !== index) })
               }
+              onDuplicate={() => duplicateDay(index)}
               onMove={(direction) => moveDay(index, direction)}
             />
           ))}
@@ -186,7 +257,7 @@ export function TrainingPlanEditor({
               {emptyTrainingDays === 1
                 ? "Hay un día de entrenamiento sin ejercicios."
                 : `Hay ${emptyTrainingDays} días de entrenamiento sin ejercicios.`}{" "}
-              Márcalos como descanso o añade ejercicios.
+              Marcalos como descanso o agregá ejercicios.
             </span>
           </p>
         )}
@@ -200,7 +271,7 @@ export function TrainingPlanEditor({
 
         <div className="flex flex-wrap gap-2 sm:shrink-0">
           {onCancel && (
-            <Button type="button" variant="ghost" disabled={isPending} onClick={onCancel}>
+            <Button type="button" variant="ghost" disabled={isPending} onClick={handleCancel}>
               Cancelar
             </Button>
           )}
@@ -226,6 +297,19 @@ export function TrainingPlanEditor({
           </Button>
         </div>
       </div>
+
+      <ConfirmDialog
+        open={confirmingCancel}
+        onOpenChange={setConfirmingCancel}
+        title="¿Descartar los cambios?"
+        description="Lo que editaste en este plan se pierde. No se guarda ningún borrador."
+        confirmLabel="Descartar"
+        destructive
+        onConfirm={() => {
+          setConfirmingCancel(false)
+          onCancel?.()
+        }}
+      />
     </form>
   )
 }

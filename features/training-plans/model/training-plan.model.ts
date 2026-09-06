@@ -163,6 +163,39 @@ export function emptyPlan(): EditorPlan {
   return { title: "", notes: "", days: [emptyDay(0)] }
 }
 
+/**
+ * Copies an exercise with fresh local keys.
+ *
+ * The keys are React's identity for these rows, so reusing them would make the
+ * copy and the original share focus and re-render as one. Everything else is
+ * carried over verbatim, `mediaUrl` included: duplicating a row the trainer
+ * already attached a video to and silently dropping the video is worse than
+ * not offering the copy at all.
+ */
+export function cloneExercise(exercise: EditorExercise): EditorExercise {
+  return {
+    ...exercise,
+    key: nextKey("ex"),
+    sets: exercise.sets.map((set) => ({ ...set, key: nextKey("set") })),
+  }
+}
+
+/**
+ * Copies a whole day, exercises included.
+ *
+ * The single biggest time cost in this editor is building week two by retyping
+ * week one. The label is suffixed rather than left identical so two days never
+ * read the same while the trainer is still deciding what the copy is for.
+ */
+export function cloneDay(day: EditorDay): EditorDay {
+  return {
+    ...day,
+    key: nextKey("day"),
+    label: day.label.trim() ? `${day.label} (copia)` : "",
+    exercises: day.exercises.map(cloneExercise),
+  }
+}
+
 export function countExercises(plan: EditorPlan): number {
   return plan.days.reduce((total, day) => total + (day.restDay ? 0 : day.exercises.length), 0)
 }

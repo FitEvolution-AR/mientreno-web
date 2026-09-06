@@ -1,8 +1,9 @@
 "use client"
 
-import { Calculator, ChevronDown, ChevronUp, Plus, Trash2 } from "lucide-react"
+import { Calculator, ChevronDown, ChevronUp, Copy, Plus, Trash2 } from "lucide-react"
 import { useState } from "react"
 
+import { ConfirmDialog } from "@/components/dashboard/confirm-dialog"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -25,8 +26,11 @@ interface MealEditorProps {
   index: number
   total: number
   disabled?: boolean
+  /** Validation message for this meal, anchored here instead of at the top. */
+  error?: string
   onChange: (patch: Partial<EditorMeal>) => void
   onRemove: () => void
+  onDuplicate: () => void
   onMove: (direction: -1 | 1) => void
 }
 
@@ -35,13 +39,30 @@ export function MealEditor({
   index,
   total,
   disabled,
+  error,
   onChange,
   onRemove,
+  onDuplicate,
   onMove,
 }: MealEditorProps) {
   const [pickerOpen, setPickerOpen] = useState(false)
+  const [confirmingRemove, setConfirmingRemove] = useState(false)
 
   const computed = sumFoodMacros(meal.foods)
+  const errorId = error ? `${meal.key}-error` : undefined
+
+  /*
+   * Una comida con alimentos adentro no se borra de un click: el botón está
+   * pegado a las flechas de orden, no hay deshacer, y con ella se van los
+   * macros ya calculados desde el catálogo. Vacía se va sin preguntar.
+   */
+  function handleRemove() {
+    if (meal.foods.length > 0) {
+      setConfirmingRemove(true)
+      return
+    }
+    onRemove()
+  }
 
   function addFood(picked: PickedFood) {
     const food: EditorMealFood = {
@@ -72,7 +93,12 @@ export function MealEditor({
   }
 
   return (
-    <li className="flex flex-col gap-4 rounded-2xl border border-border bg-card p-5">
+    <li
+      className={cn(
+        "flex flex-col gap-4 rounded-2xl bg-card p-5",
+        error ? "border border-error/60 ring-1 ring-error/20" : "border border-border",
+      )}
+    >
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div className="grid flex-1 gap-3 sm:grid-cols-2">
           <div className="flex flex-col gap-2">
@@ -83,9 +109,16 @@ export function MealEditor({
               id={`${meal.key}-name`}
               value={meal.name}
               disabled={disabled}
+              aria-invalid={error ? true : undefined}
+              aria-describedby={errorId}
               placeholder="Desayuno"
               onChange={(event) => onChange({ name: event.target.value })}
             />
+            {error && (
+              <p id={errorId} role="alert" className="text-body text-error-text">
+                {error}
+              </p>
+            )}
           </div>
 
           <div className="flex flex-col gap-2">
@@ -98,8 +131,8 @@ export function MealEditor({
               disabled={disabled}
               onChange={(event) => onChange({ timeOfDay: event.target.value as TimeOfDay })}
               className={cn(
-                "h-9 rounded-lg border border-input bg-transparent px-2 text-body",
-                "focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none",
+                "h-9 rounded-lg border border-border-dark bg-transparent px-2 text-body",
+                "focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
                 "disabled:cursor-not-allowed disabled:opacity-50",
               )}
             >
@@ -133,6 +166,19 @@ export function MealEditor({
           >
             <ChevronDown className="size-4" />
           </Button>
+          {/* Repetir el mismo desayuno con una fruta distinta era retipear
+              cuatro macros; ahora se copia y se cambia lo que cambia. */}
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            disabled={disabled}
+            aria-label={`Duplicar comida ${index + 1}`}
+            title="Duplicar comida"
+            onClick={onDuplicate}
+          >
+            <Copy className="size-4" />
+          </Button>
           <Button
             type="button"
             variant="ghost"
@@ -140,7 +186,7 @@ export function MealEditor({
             disabled={disabled || total === 1}
             aria-label="Quitar comida"
             className="text-error-text focus-visible:text-error-text"
-            onClick={onRemove}
+            onClick={handleRemove}
           >
             <Trash2 className="size-4" />
           </Button>
@@ -158,7 +204,7 @@ export function MealEditor({
             onClick={() => setPickerOpen(true)}
           >
             <Plus className="size-4" />
-            Añadir alimento
+            Agregar alimento
           </Button>
         </div>
 
@@ -238,7 +284,7 @@ export function MealEditor({
             // Macros are not stored per meal food, so a plan loaded from the API
             // has no basis to compute from until foods are re-picked.
             <p className="text-caption text-muted-foreground text-pretty">
-              Para calcular los macros automáticamente, añade los alimentos desde el catálogo en
+              Para calcular los macros automáticamente, agregá los alimentos desde el catálogo en
               gramos. Los alimentos guardados anteriormente no conservan sus valores.
             </p>
           )
@@ -289,6 +335,21 @@ export function MealEditor({
       </div>
 
       <FoodPicker open={pickerOpen} onOpenChange={setPickerOpen} onPick={addFood} />
+
+      <ConfirmDialog
+        open={confirmingRemove}
+        onOpenChange={setConfirmingRemove}
+        title={`¿Quitar "${meal.name.trim() || `la comida ${index + 1}`}"?`}
+        description={`Se van con ella ${meal.foods.length} ${
+          meal.foods.length === 1 ? "alimento" : "alimentos"
+        } y los macros que hayas calculado. No se puede deshacer.`}
+        confirmLabel="Quitar comida"
+        destructive
+        onConfirm={() => {
+          setConfirmingRemove(false)
+          onRemove()
+        }}
+      />
     </li>
   )
 }

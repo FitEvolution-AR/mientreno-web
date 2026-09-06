@@ -25,7 +25,14 @@ export function Overview() {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      {/*
+        Tres tarjetas, no cuatro. "Alumnos totales" mostraba `students.length`,
+        que es el roster ACTIVE del backend más las pausadas que recuerde *este*
+        navegador (`features/students/model/paused-store.ts`): no era un total,
+        y cambiaba de valor según el dispositivo desde el que se mirara. Como
+        además repetía "Alumnos activos" salvo por esas pausadas, se fue.
+      */}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
         <StatCard
           label="Alumnos activos"
           value={activeCount}
@@ -33,24 +40,27 @@ export function Overview() {
           accent="primary"
           loading={isLoading}
         />
+        {/*
+          El mismo problema, pero acá el número sí vale la pena: es el único
+          lugar del panel desde el que se llega a una suscripción pausada. La
+          aclaración va siempre, incluso cuando marca 0 — sobre todo cuando
+          marca 0, que es lo que ve un entrenador en un navegador nuevo con
+          alumnos pausados en otro. Se borra junto con `paused-store.ts` cuando
+          el roster devuelva PAUSED (`docs/BACKEND_CHANGE_REQUEST.md`, problema 2).
+        */}
         <StatCard
           label="Suscripciones pausadas"
           value={pausedCount}
           icon={PauseCircle}
           accent="warning"
           loading={isLoading}
+          hint="Sólo las que pausaste desde este navegador."
         />
         <StatCard
           label="Planes de suscripción"
           value={plans.data?.length ?? 0}
           icon={CreditCard}
           loading={plans.isLoading}
-        />
-        <StatCard
-          label="Alumnos totales"
-          value={students.length}
-          icon={Users}
-          loading={isLoading}
         />
       </div>
 
@@ -69,7 +79,7 @@ export function Overview() {
           total={training.data?.length ?? 0}
           isLoading={training.isLoading}
           isError={training.isError}
-          emptyLabel="Cuando tengas alumnos activos verás aquí quién necesita rutina."
+          emptyLabel="Cuando tengas alumnos activos verás acá quién necesita rutina."
           pendingLabel="sin rutina asignada"
         />
 
@@ -81,7 +91,7 @@ export function Overview() {
           total={nutrition.data?.length ?? 0}
           isLoading={nutrition.isLoading}
           isError={nutrition.isError}
-          emptyLabel="Cuando tengas alumnos activos verás aquí quién necesita pauta."
+          emptyLabel="Cuando tengas alumnos activos verás acá quién necesita pauta."
           pendingLabel="sin plan de nutrición"
         />
       </div>
@@ -137,7 +147,7 @@ function PlanSummaryCard({
           <p className="text-body text-muted-foreground text-pretty">{emptyLabel}</p>
         ) : pending > 0 ? (
           <p className="text-body text-pretty">
-            <span className="text-title font-semibold tracking-tight text-warning-text">
+            <span className="font-heading text-title font-semibold tracking-tight text-warning-text">
               {pending}
             </span>{" "}
             <span className="text-muted-foreground">
